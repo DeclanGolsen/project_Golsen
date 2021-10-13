@@ -11,7 +11,15 @@ biblio-style: apalike
 
 ### Research area and problem
 
+The research area for this project will be dialectology, and the ability of API-based corpora to capture elements of regional dialect variation.
+
+The uncertainty surrounding typed-language's ability to capture distinctive, regional aspects of language use.
+
 ### Research aim and question
+
+To compare the findings of API-based data to more traditionally compiled corpora, and discover whether attributes of regional dialects are noticeable in language used on Twitter.
+
+Are established aspects of regional dialects found in API-based data, such as tweets? To what extent are dialects discernible in typed language?
 
 ## Reproduce
 
@@ -31,3 +39,5 @@ rm(list = ls()) # clean working environment
 ```
 
 ## References
+
+[@clopper2006; @grieve2019; @moisl; @nguyen2017; @yumpu.com; @zaghouani2018; @szmrecsanyi2011]

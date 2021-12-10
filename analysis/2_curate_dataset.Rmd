@@ -9,11 +9,11 @@ biblio-style: apalike
 
 ### Description
 
-<!-- The aim of this script -->
+This script is essential to attaching state and region data to each tweet, which is necessary for any analysis of the regional distribution of terms. The quantity of each term in each CSV file is also tabulated in this section, which provides important information about the data being analyzed, and could help explain the ultimate geographic distribution.
 
 ### Usage
 
-<!-- How to run this script: what input it requires and output produced -->
+After running the setup code and the code creating the join_tweets_to_states function, simply replace the names of my CSV files, such as "plurals" in the "Second Person Plurals" section, with the name of your own. For the join_tweets_to_states function to work, an API key from the Census Bureau will be necessary, as mentioned in the previous section.
 
 ## Setup
 
@@ -27,7 +27,7 @@ library(skimr)
 <!-- Steps involved in curating and organizing the data -->
 
 
-```{r}
+```{r join-tweets-to-states-function}
 join_tweets_to_states <- function(tweets) {
   # Function
   # Takes a data frame result from an rtweet::search_term() query
@@ -70,10 +70,6 @@ join_tweets_to_states <- function(tweets) {
 
 ### Second Person Plurals
 
-```{r}
-join_tweets_to_states(plurals)
-```
-
 ```{r second-person-plurals-summary, message=FALSE}
 plurals <- read_csv(file = "../data/original/twitter/plurals.csv") # read dataset from disk
 
@@ -83,10 +79,6 @@ plurals %>%
 
 ### Outdoor Sales
 
-```{r}
-join_tweets_to_states(sale)
-```
-
 ```{r garage-sale-summary, message=FALSE}
 sale <- read_csv(file = "../data/original/twitter/sale.csv") # read dataset from disk
 sale %>%
@@ -94,10 +86,6 @@ sale %>%
 ```
 
 ### Gym Shoes
-
-```{r}
-join_tweets_to_states(shoes)
-```
 
 ```{r shoes-summary, message=FALSE, warning=FALSE}
 shoes <- read_csv(file = "../data/original/twitter/shoes.csv") # read dataset from disk
@@ -108,10 +96,6 @@ shoes %>%
 
 ### Soft Drinks
 
-```{r}
-join_tweets_to_states(tonix)
-```
-
 ```{r tonix-summary, message=FALSE, warning=FALSE}
 tonix <- read_csv(file = "../data/original/twitter/tonix.csv") # read dataset from disk
 
@@ -120,10 +104,6 @@ tonix %>%
 ```
 
 ### Major Roads
-
-```{r}
-join_tweets_to_states(roads)
-```
 
 ```{r roads-summary, message=FALSE, warning=FALSE}
 roads <- read_csv(file = "../data/original/twitter/roads.csv") # read dataset from disk
@@ -137,19 +117,8 @@ roads %>%
 
 ### Log
 
-<!-- Any description that will be helpful to understand the results of this script and how it contributes to the aims of the project -->
-
-### Session
-
-<details><summary>View session information</summary>
-
-```{r, child="_session-info.Rmd"}
-```
-
-</details>
-
-```{r cleanup, echo=FALSE}
-rm(list = ls()) # clean working environment
-```
+This script should output information on the quantity of each term gathered, and ensure the census information can be used in the project henceforth.
 
 ## References
+
+  Vaux, Bert. “Harvard Dialect Survey.” Harvard Dialect Survey, 2003, http://dialect.redlog.net.

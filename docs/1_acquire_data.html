@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2021-12-07" />
+<meta name="date" content="2021-12-10" />
 
 <title>Acquire data</title>
 
@@ -488,7 +488,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Acquire data</h1>
-<h4 class="date">2021-12-07</h4>
+<h4 class="date">2021-12-10</h4>
 
 </div>
 
@@ -497,13 +497,11 @@ div.tocify {
 <h2>About</h2>
 <div id="description" class="section level3">
 <h3>Description</h3>
-<!-- The aim of this script -->
-<p>This script will hopefully take 1% of all tweets written in the contiguous USA for a long enough time to acquire enough tweets to form a geographical corpus. Key words/constructions that help define established, regional dialects of American English will be searched for in these tweets, and findings will then be quantified, allowing them to be compared to professionally compiled corpora of regional American English.</p>
+<p>This script is crucial to acquiring the Twitter data around which the whole project is based. After initially loading the necessary libraries and creating the term_search function, tweets including any search term can be acquired. As seen below, I used the same code to create the five groups of search terms used for this project, with only the “terms to search” line of code, the name of the CSV created, and “n = …” changing; the “terms to search” line of code should be replaced with the name given to your group of terms, the name of the CSV should be changed to whatever makes the most sense for you, and “n = …” should be replaced with the number of tweets containing each term you want to acquire.</p>
 </div>
 <div id="usage" class="section level3">
 <h3>Usage</h3>
-<!-- How to run this script: what input it requires and output produced -->
-<p>This script will require …</p>
+<p>API keys for both Twitter and the Census are necessary for this project. Once these have been acquired, simply run the requisite packages and substitute the terms and quantities seen here with your own.</p>
 </div>
 </div>
 <div id="setup" class="section level2">
@@ -513,709 +511,156 @@ div.tocify {
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rtweet)  <span class="co"># collecting tweets from Twitter API</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rvest)  <span class="co"># webscraping</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)  <span class="co"># iteration</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>token <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="st">&quot;../golsen_token.rds&quot;</span>) <span class="co"># read personal Twitter API token</span></span></code></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidycensus)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>token <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="st">&quot;../golsen_token.rds&quot;</span>) <span class="co"># read personal Twitter API token</span></span></code></pre></div>
 </div>
 <div id="run" class="section level2">
 <h2>Run</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>search_term <span class="ot">&lt;-</span> <span class="st">&quot;y&#39;all&quot;</span> <span class="co"># create a search_term variable</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>tweets <span class="ot">&lt;-</span> </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">search_tweets</span>(<span class="at">q =</span> search_term, <span class="co"># query term (from search_term)</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">n =</span> <span class="dv">500</span>, <span class="co"># number of desired tweets</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">include_rts =</span> <span class="cn">FALSE</span>, <span class="co"># no retweets</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">geocode =</span> <span class="fu">lookup_coords</span>(<span class="st">&quot;usa&quot;</span>), <span class="co"># only from US</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">token =</span> token) <span class="sc">%&gt;%</span>  <span class="co"># token for authentication</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lat_lng</span>() <span class="sc">%&gt;%</span> <span class="co"># extract the geocoordinates where available</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">search_term =</span> search_term) <span class="co"># add search_term value to the data frame</span></span></code></pre></div>
-<pre><code>## 
-Downloading [===============&gt;-------------------------]  40%
-Downloading [========================&gt;----------------]  60%
-Downloading [================================&gt;--------]  80%
-Downloading [=========================================] 100%</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(tweets)</span></code></pre></div>
-<pre><code>## Rows: 500
-## Columns: 93
-## $ user_id                 [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;34143508&quot;, &quot;1242233587967168512&quot;, &quot;1307004755219283977&quot;, &quot;2787795418&quot;, &quot;9842504805692661…
-## $ status_id               [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1468221934106259459&quot;, &quot;1468221916695699457&quot;, &quot;1468221915647123460&quot;, &quot;1468221911410880522…
-## $ created_at              [3m[38;5;246m&lt;dttm&gt;[39m[23m 2021-12-07 14:12:41, 2021-12-07 14:12:37, 2021-12-07 14:12:37, 2021-12-07 14:12:36, 2021…
-## $ screen_name             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;real_KO&quot;, &quot;i_am_jevy&quot;, &quot;MorseCodeGamer&quot;, &quot;MosholiTumelo&quot;, &quot;RomancingNope&quot;, &quot;Esmiralied&quot;,…
-## $ text                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;I hope y’all got all the vids lol https://t.co/Oyj0WAAA1w&quot;, &quot;Y&#39;all betta listen when @Ko…
-## $ source                  [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Twitter for iPhone&quot;, &quot;Twitter for iPhone&quot;, &quot;Twitter for iPhone&quot;, &quot;Twitter for Android&quot;, …
-## $ display_text_width      [3m[38;5;246m&lt;dbl&gt;[39m[23m 33, 44, 96, 217, 270, 86, 131, 100, 189, 153, 84, 17, 62, 204, 110, 116, 213, 185, 44, 52…
-## $ reply_to_status_id      [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;1467985944523546624&quot;, &quot;1468221730313453574&quot;, NA, NA, &quot;1467995150223880194&quot;, …
-## $ reply_to_user_id        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;1677550987&quot;, &quot;984250480569266177&quot;, NA, NA, &quot;15463671&quot;, NA, &quot;95831609&quot;, NA, N…
-## $ reply_to_screen_name    [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Dtheyounging&quot;, &quot;RomancingNope&quot;, NA, NA, &quot;samstein&quot;, NA, &quot;Roscoe_Inglish&quot;, NA…
-## $ is_quote                [3m[38;5;246m&lt;lgl&gt;[39m[23m TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, F…
-## $ is_retweet              [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ favorite_count          [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-## $ retweet_count           [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-## $ quote_count             [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ reply_count             [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ hashtags                [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, &lt;&quot;DallasCowboys&quot;, &quot;WashingtonFootball&quot;, &quot;CowboysNation&quot;&gt;, NA, NA, NA, &lt;&quot;essay&quot;, …
-## $ symbols                 [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ urls_url                [3m[38;5;246m&lt;list&gt;[39m[23m &quot;twitter.com/nottodayyoubum…&quot;, NA, NA, NA, NA, &quot;twitter.com/babycockroache…&quot;, NA, NA, &quot;b…
-## $ urls_t.co               [3m[38;5;246m&lt;list&gt;[39m[23m &quot;https://t.co/Oyj0WAAA1w&quot;, NA, NA, NA, NA, &quot;https://t.co/qlc4JAQH8u&quot;, NA, NA, &quot;https://t…
-## $ urls_expanded_url       [3m[38;5;246m&lt;list&gt;[39m[23m &quot;https://twitter.com/nottodayyoubum/status/1467731040420642822&quot;, NA, NA, NA, NA, &quot;https:…
-## $ media_url               [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;http://pbs.twimg.com/media/FGAsDSDXIAkB-je.jpg&quot;, &quot;http://pbs.twimg.com/ext_tw_video…
-## $ media_t.co              [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://t.co/jNy9T96yJa&quot;, &quot;https://t.co/ph2ArACkmq&quot;, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ media_expanded_url      [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://twitter.com/i_am_jevy/status/1468221916695699457/photo/1&quot;, &quot;https://twitter…
-## $ media_type              [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;photo&quot;, &quot;photo&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;p…
-## $ ext_media_url           [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;http://pbs.twimg.com/media/FGAsDSDXIAkB-je.jpg&quot;, &quot;http://pbs.twimg.com/ext_tw_video…
-## $ ext_media_t.co          [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://t.co/jNy9T96yJa&quot;, &quot;https://t.co/ph2ArACkmq&quot;, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ ext_media_expanded_url  [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://twitter.com/i_am_jevy/status/1468221916695699457/photo/1&quot;, &quot;https://twitter…
-## $ ext_media_type          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ mentions_user_id        [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;2163267319&quot;, NA, &lt;&quot;1677550987&quot;, &quot;1073780906178027520&quot;, &quot;1023114178247061504&quot;&gt;, &quot;215…
-## $ mentions_screen_name    [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;KodakBlack1k&quot;, NA, &lt;&quot;Dtheyounging&quot;, &quot;teegatheneega&quot;, &quot;HipHopNumbers&quot;&gt;, &quot;magi_jay&quot;, …
-## $ lang                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;,…
-## $ quoted_status_id        [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1467731040420642822&quot;, NA, NA, NA, NA, &quot;1450000155126603778&quot;, NA, NA, NA, NA, NA, &quot;146785…
-## $ quoted_text             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;What’s the funniest way Julius tried to save money in Everybody Hates Chris? https://t.c…
-## $ quoted_created_at       [3m[38;5;246m&lt;dttm&gt;[39m[23m 2021-12-06 05:42:03, NA, NA, NA, NA, 2021-10-18 07:25:51, NA, NA, NA, NA, NA, 2021-12-06…
-## $ quoted_source           [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Twitter for iPhone&quot;, NA, NA, NA, NA, &quot;Twitter Web App&quot;, NA, NA, NA, NA, NA, &quot;Twitter for…
-## $ quoted_favorite_count   [3m[38;5;246m&lt;int&gt;[39m[23m 6199, NA, NA, NA, NA, 1, NA, NA, NA, NA, NA, 1354, NA, NA, NA, NA, NA, NA, 10795, NA, NA,…
-## $ quoted_retweet_count    [3m[38;5;246m&lt;int&gt;[39m[23m 1147, NA, NA, NA, NA, 1, NA, NA, NA, NA, NA, 133, NA, NA, NA, NA, NA, NA, 970, NA, NA, NA…
-## $ quoted_user_id          [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1027596829834272769&quot;, NA, NA, NA, NA, &quot;1038513205394337793&quot;, NA, NA, NA, NA, NA, &quot;739850…
-## $ quoted_screen_name      [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;nottodayyoubum&quot;, NA, NA, NA, NA, &quot;BabyCockroaches&quot;, NA, NA, NA, NA, NA, &quot;MikedUpSports1&quot;…
-## $ quoted_name             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;soul.&quot;, NA, NA, NA, NA, &quot;VeganEmpress&quot;, NA, NA, NA, NA, NA, &quot;Mike Nicastro&quot;, NA, NA, NA,…
-## $ quoted_followers_count  [3m[38;5;246m&lt;int&gt;[39m[23m 1442, NA, NA, NA, NA, 145, NA, NA, NA, NA, NA, 3761, NA, NA, NA, NA, NA, NA, 823396, NA, …
-## $ quoted_friends_count    [3m[38;5;246m&lt;int&gt;[39m[23m 443, NA, NA, NA, NA, 32, NA, NA, NA, NA, NA, 799, NA, NA, NA, NA, NA, NA, 787716, NA, NA,…
-## $ quoted_statuses_count   [3m[38;5;246m&lt;int&gt;[39m[23m 37838, NA, NA, NA, NA, 368, NA, NA, NA, NA, NA, 7523, NA, NA, NA, NA, NA, NA, 81004, NA, …
-## $ quoted_location         [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Manhattan, NY&quot;, NA, NA, NA, NA, &quot;Washington, USA&quot;, NA, NA, NA, NA, NA, &quot;&quot;, NA, NA, NA, N…
-## $ quoted_description      [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;god gave me style. god gave me grace.&quot;, NA, NA, NA, NA, &quot;Digital Artist🎨, Animal Activi…
-## $ quoted_verified         [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, NA, NA, NA, NA, FALSE, NA, NA, NA, NA, NA, FALSE, NA, NA, NA, NA, NA, NA, TRUE, NA…
-## $ retweet_status_id       [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_text            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_created_at      [3m[38;5;246m&lt;dttm&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ retweet_source          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_favorite_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_retweet_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_user_id         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_screen_name     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_name            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_followers_count [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_friends_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_statuses_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_location        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_description     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_verified        [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ place_url               [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;https://api.twitter.…
-## $ place_name              [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;New Orleans&quot;, &quot;New O…
-## $ place_full_name         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;New Orleans, LA&quot;, &quot;N…
-## $ place_type              [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;city&quot;, &quot;city&quot;, NA, N…
-## $ country                 [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;United States&quot;, &quot;Uni…
-## $ country_code            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;US&quot;, &quot;US&quot;, NA, NA, N…
-## $ geo_coords              [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;…
-## $ coords_coords           [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;…
-## $ bbox_coords             [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA, NA, NA, NA, NA, NA, NA&gt;, &lt;NA, NA, NA, NA, NA, NA, NA, NA&gt;, &lt;NA, NA, NA, NA, NA,…
-## $ status_url              [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://twitter.com/real_KO/status/1468221934106259459&quot;, &quot;https://twitter.com/i_am_jevy/…
-## $ name                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;RR DUSTO🖤💛&quot;, &quot;J. Rycharde&quot;, &quot;TheMorseCode&quot;, &quot;TR!LL_Jigz&quot;, &quot;Cate Eland&quot;, &quot;Esmira&quot;, &quot;My …
-## $ location                [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Chicago, IL&quot;, &quot;Bahamas&quot;, &quot;Dallas, TX&quot;, &quot;West Virginia&quot;, &quot;Austin, TX&quot;, &quot;Elk Grove Village…
-## $ description             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;REAL RECORDS #KOKLAN...#TEAMKO..#TN...#RR..send beats to KOmanagementCruise@gmail.com&quot;, …
-## $ url                     [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://t.co/s8yk1Xk0SF&quot;, NA, &quot;https://t.co/rpam8hBDBK&quot;, NA, NA, &quot;https://t.co/XsStvxtrP…
-## $ protected               [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ followers_count         [3m[38;5;246m&lt;int&gt;[39m[23m 1715, 299, 176, 115, 6697, 33, 16313, 3769, 7697, 314, 314, 314, 1264, 14082, 2475, 149, …
-## $ friends_count           [3m[38;5;246m&lt;int&gt;[39m[23m 728, 470, 275, 443, 970, 40, 15839, 1231, 2475, 311, 311, 311, 371, 7262, 1826, 123, 41, …
-## $ listed_count            [3m[38;5;246m&lt;int&gt;[39m[23m 10, 2, 3, 0, 66, 0, 1, 7, 420, 0, 0, 0, 39, 107, 13, 0, 0, 14, 14, 28, 6, 0, 1, 15, 76, 0…
-## $ statuses_count          [3m[38;5;246m&lt;int&gt;[39m[23m 61479, 7823, 2291, 601, 82403, 1156, 17846, 46263, 75278, 4367, 4367, 4367, 24596, 34227,…
-## $ favourites_count        [3m[38;5;246m&lt;int&gt;[39m[23m 56093, 5055, 1392, 2926, 304117, 877, 39643, 374515, 17286, 3019, 3019, 3019, 17, 117230,…
-## $ account_created_at      [3m[38;5;246m&lt;dttm&gt;[39m[23m 2009-04-22 02:14:45, 2020-03-23 23:35:49, 2020-09-18 17:13:20, 2014-09-27 19:41:33, 2018…
-## $ verified                [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ profile_url             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://t.co/s8yk1Xk0SF&quot;, NA, &quot;https://t.co/rpam8hBDBK&quot;, NA, NA, &quot;https://t.co/XsStvxtrP…
-## $ profile_expanded_url    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://album.link/REALKO&quot;, NA, &quot;https://www.twitch.tv/themorsecode&quot;, NA, NA, &quot;https://w…
-## $ account_lang            [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ profile_banner_url      [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://pbs.twimg.com/profile_banners/34143508/1604878661&quot;, &quot;https://pbs.twimg.com/profi…
-## $ profile_background_url  [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;http://abs.twimg.com/images/themes/theme1/bg.png&quot;, NA, NA, &quot;http://abs.twimg.com/images/…
-## $ profile_image_url       [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;http://pbs.twimg.com/profile_images/1401562671003189248/uXUAZGgV_normal.jpg&quot;, &quot;http://pb…
-## $ lat                     [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 29.98260, 29.98260, N…
-## $ lng                     [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, -90.01101, -90.01101,…
-## $ search_term             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;y&#39;all&quot;, &quot;y&#39;all&quot;, &quot;y&#39;all&quot;, &quot;y&#39;all&quot;, &quot;y&#39;all&quot;, &quot;y&#39;all&quot;, &quot;y&#39;all&quot;, &quot;y&#39;all&quot;, &quot;y&#39;all&quot;, &quot;y&#39;all&quot;,…</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>term_search <span class="ot">&lt;-</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(search_term, <span class="at">n =</span> <span class="dv">1000</span>) {</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Function: </span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Search recent tweets for specific term</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">library</span>(rtweet) <span class="co"># to search Twitter API</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    tweets <span class="ot">&lt;-</span> </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">search_tweets</span>(<span class="at">q =</span> <span class="fu">sQuote</span>(search_term), <span class="co"># query term (from search_term)</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">n =</span> n, <span class="co"># number of desired tweets (from n)</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">include_rts =</span> <span class="cn">FALSE</span>, <span class="co"># no retweets</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                    <span class="at">geocode =</span> <span class="fu">lookup_coords</span>(<span class="st">&quot;usa&quot;</span>), <span class="co"># only from US</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                    <span class="at">token =</span> token) <span class="sc">%&gt;%</span>  <span class="co"># token for authentication</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">lat_lng</span>() <span class="sc">%&gt;%</span> <span class="co"># extract the geocoordinates where available</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">search_term =</span> search_term) <span class="co"># add search_term value to the data frame</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(tweets) <span class="co"># return the results</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  }</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>second_person_plurals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;y&#39;all&quot;</span>, <span class="st">&quot;yall&quot;</span>, <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">you guys</span><span class="sc">\&quot;</span><span class="st">&quot;</span>)</span></code></pre></div>
-<p>JF: Declan, your issue with saving the <code>.csv</code> file was due to the fact that the ‘/twitter/’ sub-directory did not exist in the ‘../data/origina/’ directory. So I’ve added that code below and saved your data frame (<code>plurals.csv</code>).</p>
-<p>JF: I’ve also changed your search steps to make sure that when this R markdown document is run to compile the website that the search is not redone and the results are not overwritten. You had this chunk later in this document, but I added it around your search function in the appropriate place. Note: if you want to re-run the search, just change the value for <code>conduct_search</code> to <code>TRUE</code> and run the code again.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  second_person_plurals <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 500 tweets (if available)</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/plurals.csv&quot;</span>) <span class="co"># write results to disk</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>term_search <span class="ot">&lt;-</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(search_term, <span class="at">n =</span> <span class="dv">1000</span>) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Function: </span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Search recent tweets for specific term</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">library</span>(rtweet) <span class="co"># to search Twitter API</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    tweets <span class="ot">&lt;-</span> </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">search_tweets</span>(<span class="at">q =</span> <span class="fu">sQuote</span>(search_term), <span class="co"># query term (from search_term)</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">n =</span> n, <span class="co"># number of desired tweets (from n)</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">include_rts =</span> <span class="cn">FALSE</span>, <span class="co"># no retweets</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                    <span class="at">geocode =</span> <span class="fu">lookup_coords</span>(<span class="st">&quot;usa&quot;</span>), <span class="co"># only from US</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                    <span class="at">token =</span> token) <span class="sc">%&gt;%</span>  <span class="co"># token for authentication</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">lat_lng</span>() <span class="sc">%&gt;%</span> <span class="co"># extract the geocoordinates where available</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">search_term =</span> search_term) <span class="co"># add search_term value to the data frame</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(tweets) <span class="co"># return the results</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  }</span></code></pre></div>
+<div id="second-person-plurals" class="section level3">
+<h3>Second Person Plurals</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>second_person_plurals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;y&#39;all&quot;</span>, <span class="st">&quot;yall&quot;</span>, <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">you guys</span><span class="sc">\&quot;</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  second_person_plurals <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 500 tweets (if available)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/plurals.csv&quot;</span>) <span class="co"># write results to disk</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Keeping previous search results.</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plurals <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="at">file =</span> <span class="st">&quot;../data/original/twitter/plurals.csv&quot;</span>) <span class="co"># read dataset from disk</span></span></code></pre></div>
-<pre><code>## Warning: One or more parsing issues, see `problems()` for details</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>plurals <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(search_term, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="co"># preview search term counts</span></span></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["search_term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"y'all","2":"1000"},{"1":"yall","2":"1000"},{"1":"\"you guys\"","2":"998"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
 </div>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>states_map <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">&quot;state&quot;</span>)  <span class="co"># from ggplot2</span></span>
+<div id="outdoor-sales" class="section level3">
+<h3>Outdoor Sales</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sales <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">garage sale</span><span class="sc">\&quot;</span><span class="st">&quot;</span>,<span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">yard sale</span><span class="sc">\&quot;</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  sales <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">500</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 500 tweets (if available)</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/sale.csv&quot;</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Keeping previous search results.</code></pre>
+</div>
+<div id="gym-shoes" class="section level3">
+<h3>Gym Shoes</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>shoes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;sneakers&quot;</span>,<span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">tennis shoes</span><span class="sc">\&quot;</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  shoes <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 1000 tweets (if available)</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/shoes.csv&quot;</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Keeping previous search results.</code></pre>
+</div>
+<div id="soft-drinks" class="section level3">
+<h3>Soft Drinks</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tonic <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;soda&quot;</span>,<span class="st">&quot;coke&quot;</span>,<span class="st">&quot;pop&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_polygon</span>(<span class="at">data =</span> states_map, <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">group =</span> group),</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Tweets in the USA&quot;</span>, <span class="at">subtitle =</span> <span class="st">&quot;Second Person Plural&quot;</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> plurals, <span class="fu">aes</span>(<span class="at">x =</span> lng, <span class="at">y =</span> lat, <span class="at">group =</span> <span class="dv">1</span>, <span class="at">color =</span> search_term),</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>)</span></code></pre></div>
-<pre><code>## Warning: Removed 2863 rows containing missing values (geom_point).</code></pre>
-<p><img src="1_acquire_data_files/figure-html/second-person-plurals-plot-1.png" width="672" /></p>
-</div>
-<div id="sales" class="section level1">
-<h1>Sales</h1>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>search_term <span class="ot">&lt;-</span> <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">garage sale</span><span class="sc">\&quot;</span><span class="st">&quot;</span> <span class="co"># create a search_term variable</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>tweets <span class="ot">&lt;-</span> </span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">search_tweets</span>(<span class="at">q =</span> search_term, <span class="co"># query term (from search_term)</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">n =</span> <span class="dv">500</span>, <span class="co"># number of desired tweets</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">include_rts =</span> <span class="cn">FALSE</span>, <span class="co"># no retweets</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">geocode =</span> <span class="fu">lookup_coords</span>(<span class="st">&quot;usa&quot;</span>), <span class="co"># only from US</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">token =</span> token) <span class="sc">%&gt;%</span>  <span class="co"># token for authentication</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lat_lng</span>() <span class="sc">%&gt;%</span> <span class="co"># extract the geocoordinates where available</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">search_term =</span> search_term) <span class="co"># add search_term value to the data frame</span></span></code></pre></div>
-<pre><code>## 
-Downloading [===============&gt;-------------------------]  40%
-Downloading [========================&gt;----------------]  60%
-Downloading [================================&gt;--------]  80%
-Downloading [=========================================] 100%</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(tweets)</span></code></pre></div>
-<pre><code>## Rows: 405
-## Columns: 93
-## $ user_id                 [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;2614449248&quot;, &quot;21710733&quot;, &quot;1544292674&quot;, &quot;4694329592&quot;, &quot;22749642&quot;, &quot;1021449709653651458&quot;, …
-## $ status_id               [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1468212406161711105&quot;, &quot;1468205643941101568&quot;, &quot;1468112879547203586&quot;, &quot;1468103944329207812…
-## $ created_at              [3m[38;5;246m&lt;dttm&gt;[39m[23m 2021-12-07 13:34:50, 2021-12-07 13:07:58, 2021-12-07 06:59:21, 2021-12-07 06:23:51, 2021…
-## $ screen_name             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Deedo_70&quot;, &quot;EdmondHWollmann&quot;, &quot;jennymjams&quot;, &quot;VillainVibez&quot;, &quot;Classic_Craig&quot;, &quot;mike_logic…
-## $ text                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;@choppers_87 I got underwear one year from a great aunt when I was 10 or 11. My mom said…
-## $ source                  [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Twitter Web App&quot;, &quot;Twitter Web App&quot;, &quot;Twitter for iPhone&quot;, &quot;Twitter for Android&quot;, &quot;Twitt…
-## $ display_text_width      [3m[38;5;246m&lt;dbl&gt;[39m[23m 145, 152, 137, 83, 234, 278, 258, 88, 66, 38, 77, 75, 58, 153, 88, 71, 122, 85, 284, 68, …
-## $ reply_to_status_id      [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1468208070778097671&quot;, NA, NA, NA, &quot;1468093873117220865&quot;, NA, &quot;1468015360230281218&quot;, NA, …
-## $ reply_to_user_id        [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1463532779627548674&quot;, NA, NA, NA, &quot;1412836860292845573&quot;, NA, &quot;388512447&quot;, NA, &quot;26174692&quot;…
-## $ reply_to_screen_name    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;choppers_87&quot;, NA, NA, NA, &quot;AdamBombSquad&quot;, NA, &quot;MidgetTamer&quot;, NA, &quot;hiphippie&quot;, &quot;riffoutd…
-## $ is_quote                [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…
-## $ is_retweet              [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ favorite_count          [3m[38;5;246m&lt;int&gt;[39m[23m 6, 1, 3, 1, 2, 1, 1, 26, 1, 0, 3, 7, 21, 1, 3, 0, 1, 8, 2, 0, 3, 0, 0, 1, 0, 2, 3, 2, 0, …
-## $ retweet_count           [3m[38;5;246m&lt;int&gt;[39m[23m 1, 0, 0, 0, 0, 0, 0, 6, 0, 0, 1, 0, 9, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,…
-## $ quote_count             [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ reply_count             [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ hashtags                [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;motorcycles&quot;, NA, NA, &quot;TenacityGaryVee&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ symbols                 [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ urls_url                [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, &quot;twitter.com/CoolComicArt/s…&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;twitter.…
-## $ urls_t.co               [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, &quot;https://t.co/IT0UFhy4YL&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;https://t.co…
-## $ urls_expanded_url       [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, &quot;https://twitter.com/CoolComicArt/status/1468051179888328707&quot;, NA, NA, NA, N…
-## $ media_url               [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;http://pbs.twimg.com/media/FGAc9tDUcAAAVUP.jpg&quot;, &quot;http://pbs.twimg.com/media/FF_I4b…
-## $ media_t.co              [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://t.co/ui9rLRvsXe&quot;, &quot;https://t.co/e1mXO76dVr&quot;, NA, NA, &quot;https://t.co/yxIw9Emo…
-## $ media_expanded_url      [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://twitter.com/EdmondHWollmann/status/1468205643941101568/photo/1&quot;, &quot;https://t…
-## $ media_type              [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;photo&quot;, &quot;photo&quot;, NA, NA, &quot;photo&quot;, NA, NA, NA, NA, &quot;photo&quot;, NA, &quot;photo&quot;, NA, NA, NA,…
-## $ ext_media_url           [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;http://pbs.twimg.com/media/FGAc9tDUcAAAVUP.jpg&quot;, &lt;&quot;http://pbs.twimg.com/media/FF_I4…
-## $ ext_media_t.co          [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://t.co/ui9rLRvsXe&quot;, &lt;&quot;https://t.co/e1mXO76dVr&quot;, &quot;https://t.co/e1mXO76dVr&quot;&gt;, N…
-## $ ext_media_expanded_url  [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://twitter.com/EdmondHWollmann/status/1468205643941101568/photo/1&quot;, &lt;&quot;https://…
-## $ ext_media_type          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ mentions_user_id        [3m[38;5;246m&lt;list&gt;[39m[23m &quot;1463532779627548674&quot;, NA, NA, NA, &lt;&quot;1412836860292845573&quot;, &quot;5768872&quot;&gt;, &quot;382898694&quot;, &quot;388…
-## $ mentions_screen_name    [3m[38;5;246m&lt;list&gt;[39m[23m &quot;choppers_87&quot;, NA, NA, NA, &lt;&quot;AdamBombSquad&quot;, &quot;garyvee&quot;&gt;, &quot;FAVACommunity&quot;, &quot;MidgetTamer&quot;,…
-## $ lang                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;,…
-## $ quoted_status_id        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;1468051179888328707&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;14680073525992570…
-## $ quoted_text             [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Ghost Rider by Joe Quesada @JoeQuesada &amp;amp; @jpalmiotti https://t.co/kCqgEa…
-## $ quoted_created_at       [3m[38;5;246m&lt;dttm&gt;[39m[23m NA, NA, NA, 2021-12-07 02:54:11, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2021-12-07 00:00:01…
-## $ quoted_source           [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Twitter for iPhone&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Twitter Web App&quot;, …
-## $ quoted_favorite_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, 2062, NA, NA, NA, NA, NA, NA, NA, NA, NA, 118, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ quoted_retweet_count    [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, 260, NA, NA, NA, NA, NA, NA, NA, NA, NA, 28, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ quoted_user_id          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;718172930237030401&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;126715363127241113…
-## $ quoted_screen_name      [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;CoolComicArt&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;ThatF_ckerYote&quot;, NA, NA,…
-## $ quoted_name             [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Cool Comic Art&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Coyote Outlaw&quot;, NA, NA…
-## $ quoted_followers_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, 88503, NA, NA, NA, NA, NA, NA, NA, NA, NA, 12112, NA, NA, NA, NA, NA, NA, NA,…
-## $ quoted_friends_count    [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, 733, NA, NA, NA, NA, NA, NA, NA, NA, NA, 4902, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ quoted_statuses_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, 38554, NA, NA, NA, NA, NA, NA, NA, NA, NA, 56213, NA, NA, NA, NA, NA, NA, NA,…
-## $ quoted_location         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;&quot;, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_description      [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;just for fun.&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Immune to trolls &amp; 100%…
-## $ quoted_verified         [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, FALSE, NA, NA, NA, NA, NA, NA, NA, NA, NA, FALSE, NA, NA, NA, NA, NA, NA, NA,…
-## $ retweet_status_id       [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_text            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_created_at      [3m[38;5;246m&lt;dttm&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ retweet_source          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_favorite_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_retweet_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_user_id         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_screen_name     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_name            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_followers_count [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_friends_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_statuses_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_location        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_description     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_verified        [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ place_url               [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, &quot;https://api.twitter.com/1.1/geo/id/6a6d896ba1cb5dc4.json&quot;, NA, NA, N…
-## $ place_name              [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, &quot;Edmonton&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Colorado&quot;, &quot;Colorado Spr…
-## $ place_full_name         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, &quot;Edmonton, Alberta&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Colorado, USA&quot;,…
-## $ place_type              [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, &quot;city&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;admin&quot;, &quot;city&quot;, NA, NA, NA, …
-## $ country                 [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, &quot;Canada&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;United States&quot;, &quot;United St…
-## $ country_code            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, &quot;CA&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;US&quot;, &quot;US&quot;, NA, NA, NA, NA, NA,…
-## $ geo_coords              [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;…
-## $ coords_coords           [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;…
-## $ bbox_coords             [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA, NA, NA, NA, NA, NA, NA&gt;, &lt;NA, NA, NA, NA, NA, NA, NA, NA&gt;, &lt;NA, NA, NA, NA, NA,…
-## $ status_url              [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://twitter.com/Deedo_70/status/1468212406161711105&quot;, &quot;https://twitter.com/EdmondHWo…
-## $ name                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Deedo 🌲💮⛄&quot;, &quot;Edmond H Wollmann&quot;, &quot;⚔️mojojen⚔️&quot;, &quot;M00N KNIGHT🌕✨&quot;, &quot;Classic_Craig&quot;, &quot;Mi…
-## $ location                [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Frostbite Falls, MN&quot;, &quot;Veguita, New Mexico&quot;, &quot;United States&quot;, &quot;Chicago, IL&quot;, &quot;Orlando, F…
-## $ description             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Sarcasm is my first language\nConstitutional conservative\nPronouns: Get/Bent&quot;, &quot;Retired…
-## $ url                     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, &quot;https://t.co/PL0XDya9f0&quot;, NA, &quot;https://t.co/K2pA8kvCXA&quot;, &quot;https://t.co/YP85xVqXmn&quot;, …
-## $ protected               [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ followers_count         [3m[38;5;246m&lt;int&gt;[39m[23m 799, 953, 411, 343, 1676, 122, 34, 11713, 390, 590, 7296, 7296, 7296, 1585, 327, 327, 307…
-## $ friends_count           [3m[38;5;246m&lt;int&gt;[39m[23m 927, 275, 1701, 832, 1765, 163, 130, 2630, 1171, 1590, 182, 182, 182, 2025, 257, 257, 201…
-## $ listed_count            [3m[38;5;246m&lt;int&gt;[39m[23m 1, 29, 1, 1, 44, 2, 0, 181, 8, 21, 15, 15, 15, 2, 0, 0, 211, 3, 61, 30, 381, 17, 23, 3, 4…
-## $ statuses_count          [3m[38;5;246m&lt;int&gt;[39m[23m 45930, 22954, 7283, 8884, 6473, 1772, 468, 14132, 1907, 12307, 77108, 77108, 77108, 35534…
-## $ favourites_count        [3m[38;5;246m&lt;int&gt;[39m[23m 80370, 12114, 31725, 18986, 33246, 5425, 1459, 5284, 3215, 18793, 18345, 18345, 18345, 34…
-## $ account_created_at      [3m[38;5;246m&lt;dttm&gt;[39m[23m 2014-07-09 23:58:33, 2009-02-24 00:09:22, 2013-06-24 22:58:50, 2016-01-02 06:28:59, 2009…
-## $ verified                [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ profile_url             [3m[38;5;246m&lt;chr&gt;[39m[23m NA, &quot;https://t.co/PL0XDya9f0&quot;, NA, &quot;https://t.co/K2pA8kvCXA&quot;, &quot;https://t.co/YP85xVqXmn&quot;, …
-## $ profile_expanded_url    [3m[38;5;246m&lt;chr&gt;[39m[23m NA, &quot;https://www.facebook.com/Edmond-H-Wollmann-PMAFA-AstrologerAuthorArtist-170932146262…
-## $ account_lang            [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ profile_banner_url      [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://pbs.twimg.com/profile_banners/2614449248/1638131577&quot;, &quot;https://pbs.twimg.com/pro…
-## $ profile_background_url  [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;http://abs.twimg.com/images/themes/theme1/bg.png&quot;, &quot;http://abs.twimg.com/images/themes/t…
-## $ profile_image_url       [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;http://pbs.twimg.com/profile_images/1462264426510401537/lZQ3BNKJ_normal.jpg&quot;, &quot;http://pb…
-## $ lat                     [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, NA, NA, 53.55582, NA, NA, NA, NA, NA, NA, NA, NA, 38.99794, 38.88852, NA, NA,…
-## $ lng                     [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, NA, NA, -113.4926, NA, NA, NA, NA, NA, NA, NA, NA, -105.5509, -104.7893, NA, …
-## $ search_term             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;\&quot;garage sale\&quot;&quot;, &quot;\&quot;garage sale\&quot;&quot;, &quot;\&quot;garage sale\&quot;&quot;, &quot;\&quot;garage sale\&quot;&quot;, &quot;\&quot;garage sal…</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sales <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">garage sale</span><span class="sc">\&quot;</span><span class="st">&quot;</span>,<span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">yard sale</span><span class="sc">\&quot;</span><span class="st">&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  sales <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">500</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 500 tweets (if available)</span></span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/sale.csv&quot;</span>)</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  tonic <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 2000 tweets (if available)</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/tonix.csv&quot;</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Keeping previous search results.</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sale <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="at">file =</span> <span class="st">&quot;../data/original/twitter/sale.csv&quot;</span>) <span class="co"># read dataset from disk</span></span></code></pre></div>
-<pre><code>## Warning: One or more parsing issues, see `problems()` for details</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>sale <span class="sc">%&gt;%</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(search_term, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="co"># preview</span></span></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["search_term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"\"garage sale\"","2":"413"},{"1":"\"yard sale\"","2":"298"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
 </div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>states_map <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">&quot;state&quot;</span>)  <span class="co"># from ggplot2</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_polygon</span>(<span class="at">data =</span> states_map, <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">group =</span> group),</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Tweets in the USA&quot;</span>, <span class="at">subtitle =</span> <span class="st">&quot;Second Person Plural&quot;</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> sale, <span class="fu">aes</span>(<span class="at">x =</span> lng, <span class="at">y =</span> lat, <span class="at">group =</span> <span class="dv">1</span>, <span class="at">color =</span> search_term),</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>)</span></code></pre></div>
-<pre><code>## Warning: Removed 673 rows containing missing values (geom_point).</code></pre>
-<p><img src="1_acquire_data_files/figure-html/garage-sale-plot-1.png" width="672" /></p>
-</div>
-<div id="footwear" class="section level1">
-<h1>footwear</h1>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>search_term <span class="ot">&lt;-</span> <span class="st">&quot;sneakers&quot;</span> <span class="co"># create a search_term variable</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>tweets <span class="ot">&lt;-</span> </span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">search_tweets</span>(<span class="at">q =</span> search_term, <span class="co"># query term (from search_term)</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">n =</span> <span class="dv">1000</span>, <span class="co"># number of desired tweets</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">include_rts =</span> <span class="cn">FALSE</span>, <span class="co"># no retweets</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">geocode =</span> <span class="fu">lookup_coords</span>(<span class="st">&quot;usa&quot;</span>), <span class="co"># only from US</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">token =</span> token) <span class="sc">%&gt;%</span>  <span class="co"># token for authentication</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lat_lng</span>() <span class="sc">%&gt;%</span> <span class="co"># extract the geocoordinates where available</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">search_term =</span> search_term) <span class="co"># add search_term value to the data frame</span></span></code></pre></div>
-<pre><code>## 
-Downloading [=======&gt;---------------------------------]  20%
-Downloading [===========&gt;-----------------------------]  30%
-Downloading [===============&gt;-------------------------]  40%
-Downloading [===================&gt;---------------------]  50%
-Downloading [========================&gt;----------------]  60%
-Downloading [============================&gt;------------]  70%
-Downloading [================================&gt;--------]  80%
-Downloading [====================================&gt;----]  90%
-Downloading [=========================================] 100%</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(tweets)</span></code></pre></div>
-<pre><code>## Rows: 1,000
-## Columns: 93
-## $ user_id                 [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;742839404184653824&quot;, &quot;165589138&quot;, &quot;1012170940992638976&quot;, &quot;1433215730&quot;, &quot;199463665&quot;, &quot;156…
-## $ status_id               [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1468220789652660224&quot;, &quot;1468220423204708353&quot;, &quot;1468220320507179018&quot;, &quot;1468220160578359297…
-## $ created_at              [3m[38;5;246m&lt;dttm&gt;[39m[23m 2021-12-07 14:08:09, 2021-12-07 14:06:41, 2021-12-07 14:06:17, 2021-12-07 14:05:39, 2021…
-## $ screen_name             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;gracesgrave_&quot;, &quot;PJEberlyn&quot;, &quot;WickedChuck&quot;, &quot;emb1721&quot;, &quot;ConsiderMeLuvly&quot;, &quot;AaliyahJX333&quot;,…
-## $ text                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;My birth control and my sneakers come today, I’m so heckin excited&quot;, &quot;all I want for Chr…
-## $ source                  [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Twitter for iPhone&quot;, &quot;Twitter Web App&quot;, &quot;Twitter for iPhone&quot;, &quot;Twitter for iPhone&quot;, &quot;Ins…
-## $ display_text_width      [3m[38;5;246m&lt;dbl&gt;[39m[23m 66, 49, 32, 58, 175, 143, 100, 54, 66, 69, 78, 103, 97, 81, 275, 275, 272, 69, 116, 120, …
-## $ reply_to_status_id      [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;1467905395641528331&quot;, NA, NA, NA, NA, NA, NA, &quot;1468117672311201798&quot;, NA, NA,…
-## $ reply_to_user_id        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;93251387&quot;, NA, NA, NA, NA, NA, NA, &quot;1456351373172240413&quot;, NA, NA, &quot;299288292…
-## $ reply_to_screen_name    [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;RJ_Young&quot;, NA, NA, NA, NA, NA, NA, &quot;sneakers_sqweak&quot;, NA, NA, &quot;curlscoutsofU…
-## $ is_quote                [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,…
-## $ is_retweet              [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ favorite_count          [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 1, 8, 9, 7, 1, 0, 3, 0, 0, 1, 1, 0, 0, 1, 0, 0, 8, 6, 0, 0, 0, 0, 10, 3…
-## $ retweet_count           [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 4, 5,…
-## $ quote_count             [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ reply_count             [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ hashtags                [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &lt;&quot;shemovesus&quot;, &quot;ad&quot;&gt;, NA, &lt;&quot;NothingNew&quot;, &quot;Sneakers&quot;, &quot;StyleInspo&quot;, &quot;Wome…
-## $ symbols                 [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ urls_url                [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, &quot;twitter.com/xxchannyy/stat…&quot;, NA, &quot;instagram.com/p/CXLzAL0OS_T/…&quot;, NA, NA, NA, …
-## $ urls_t.co               [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, &quot;https://t.co/oG3YN8N0QL&quot;, NA, &quot;https://t.co/JEZAkPpDuK&quot;, NA, NA, NA, NA, NA, NA…
-## $ urls_expanded_url       [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, &quot;https://twitter.com/xxchannyy/status/1468206175422459909&quot;, NA, &quot;https://www.ins…
-## $ media_url               [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, &quot;http://pbs.twimg.com/media/FF61h8RXwAQcVFa.jpg&quot;, &quot;http://pbs.tw…
-## $ media_t.co              [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, &quot;https://t.co/f4CSJiF9fF&quot;, &quot;https://t.co/7J1LgRuLnp&quot;, &quot;https://t…
-## $ media_expanded_url      [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, &quot;https://twitter.com/wearenothingnew/status/1468218746288361485/…
-## $ media_type              [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, &quot;photo&quot;, &quot;photo&quot;, &quot;photo&quot;, &quot;photo&quot;, NA, NA, NA, NA, &quot;photo&quot;, &quot;ph…
-## $ ext_media_url           [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, &lt;&quot;http://pbs.twimg.com/media/FF61h8RXwAQcVFa.jpg&quot;, &quot;http://pbs.t…
-## $ ext_media_t.co          [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, &lt;&quot;https://t.co/f4CSJiF9fF&quot;, &quot;https://t.co/f4CSJiF9fF&quot;&gt;, &lt;&quot;https:…
-## $ ext_media_expanded_url  [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, &lt;&quot;https://twitter.com/wearenothingnew/status/1468218746288361485…
-## $ ext_media_type          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ mentions_user_id        [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, &quot;93251387&quot;, &lt;&quot;712645674244907008&quot;, &quot;712645674244907008&quot;, &quot;22029117&quot;&gt;, NA, NA…
-## $ mentions_screen_name    [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, &quot;RJ_Young&quot;, &lt;&quot;PUMAWomen&quot;, &quot;PUMAWomen&quot;, &quot;FootLockerWomen&quot;&gt;, NA, NA, NA, NA, N…
-## $ lang                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;,…
-## $ quoted_status_id        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, &quot;1468206175422459909&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ quoted_text             [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, &quot;sneaker ball Saturday no dress but I have a shoe ughhhhhhh&quot;, NA, NA, NA, NA, NA,…
-## $ quoted_created_at       [3m[38;5;246m&lt;dttm&gt;[39m[23m NA, NA, 2021-12-07 13:10:04, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-## $ quoted_source           [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, &quot;Twitter for iPhone&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-## $ quoted_favorite_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, 0, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ quoted_retweet_count    [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, 0, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ quoted_user_id          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, &quot;298575535&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ quoted_screen_name      [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, &quot;xxchannyy&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ quoted_name             [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, &quot;channyy \U{01f9e1}\U{01f929}&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_followers_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, 908, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ quoted_friends_count    [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, 1157, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-## $ quoted_statuses_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, 60882, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ quoted_location         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, &quot;&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_description      [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, &quot;SMIFF MADE &#39;15 💛💙•NC📍•K 💙 •J29:11 ✨&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_verified         [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, FALSE, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-## $ retweet_status_id       [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_text            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_created_at      [3m[38;5;246m&lt;dttm&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ retweet_source          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_favorite_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_retweet_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_user_id         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_screen_name     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_name            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_followers_count [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_friends_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_statuses_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_location        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_description     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_verified        [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ place_url               [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;https://api.twitter.com/1.1/geo/id/5b8df26e6d0be60b.json&quot;, NA, &quot;https://api.…
-## $ place_name              [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Smyrna&quot;, NA, &quot;Wyomissing&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Syra…
-## $ place_full_name         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Smyrna, GA&quot;, NA, &quot;Wyomissing, PA&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ place_type              [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;city&quot;, NA, &quot;city&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;city&quot;, NA, N…
-## $ country                 [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;United States&quot;, NA, &quot;United States&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-## $ country_code            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;US&quot;, NA, &quot;US&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;US&quot;, NA, NA, NA,…
-## $ geo_coords              [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;…
-## $ coords_coords           [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;…
-## $ bbox_coords             [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA, NA, NA, NA, NA, NA, NA&gt;, &lt;NA, NA, NA, NA, NA, NA, NA, NA&gt;, &lt;NA, NA, NA, NA, NA,…
-## $ status_url              [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://twitter.com/gracesgrave_/status/1468220789652660224&quot;, &quot;https://twitter.com/PJEbe…
-## $ name                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Baby G.&quot;, &quot;Preston J. Eberlyn&quot;, &quot;Chuck💰&quot;, &quot;Monte Bye&quot;, &quot;Lovely&quot;, &quot;SYMARA ♕&quot;, &quot;Nothing N…
-## $ location                [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Lansdale, PA&quot;, &quot;Columbus, OH&quot;, &quot;Charlotte, NC&quot;, &quot;&quot;, &quot;Houston, TX&quot;, &quot;Queensland&quot;, &quot;New Yo…
-## $ description             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;“Bad texter sun, boobs moon, I am the hottest person alive rising”&quot;, &quot;current motto that…
-## $ url                     [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://t.co/OeJQgKbpWB&quot;, &quot;https://t.co/2VFcQEn4p0&quot;, &quot;https://t.co/mSRpkMKDlQ&quot;, NA, &quot;htt…
-## $ protected               [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ followers_count         [3m[38;5;246m&lt;int&gt;[39m[23m 338, 475, 229, 30, 1111, 3390, 675, 675, 675, 675, 1282, 263, 1561, 196, 56693, 56693, 56…
-## $ friends_count           [3m[38;5;246m&lt;int&gt;[39m[23m 343, 902, 219, 195, 431, 2900, 20, 20, 20, 20, 847, 573, 350, 184, 18712, 18712, 18712, 1…
-## $ listed_count            [3m[38;5;246m&lt;int&gt;[39m[23m 1, 7, 1, 0, 51, 2, 2, 2, 2, 2, 2, 1, 6, 2, 2888, 2888, 2888, 3, 68, 22, 10, 0, 0, 4, 14, …
-## $ statuses_count          [3m[38;5;246m&lt;int&gt;[39m[23m 22582, 4016, 4001, 6001, 33526, 124158, 1795, 1795, 1795, 1795, 11449, 2609, 99505, 8551,…
-## $ favourites_count        [3m[38;5;246m&lt;int&gt;[39m[23m 78844, 9373, 1922, 12101, 875, 10685, 3490, 3490, 3490, 3490, 21996, 747, 160032, 300, 25…
-## $ account_created_at      [3m[38;5;246m&lt;dttm&gt;[39m[23m 2016-06-14 22:01:30, 2010-07-12 01:01:00, 2018-06-28 03:08:52, 2013-05-16 14:25:54, 2010…
-## $ verified                [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ profile_url             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://t.co/OeJQgKbpWB&quot;, &quot;https://t.co/2VFcQEn4p0&quot;, &quot;https://t.co/mSRpkMKDlQ&quot;, NA, &quot;htt…
-## $ profile_expanded_url    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;http://www.vsco.co/bpg997&quot;, &quot;https://blacklivesmatters.carrd.co/&quot;, &quot;http://www.Twitch.Tv…
-## $ account_lang            [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ profile_banner_url      [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://pbs.twimg.com/profile_banners/742839404184653824/1638278650&quot;, &quot;https://pbs.twimg…
-## $ profile_background_url  [3m[38;5;246m&lt;chr&gt;[39m[23m NA, &quot;http://abs.twimg.com/images/themes/theme15/bg.png&quot;, NA, &quot;http://abs.twimg.com/images…
-## $ profile_image_url       [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;http://pbs.twimg.com/profile_images/1465410518563307525/6WjI7Kis_normal.jpg&quot;, &quot;http://pb…
-## $ lat                     [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, 33.84677, NA, 40.33105, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 43.05261,…
-## $ lng                     [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, -84.51579, NA, -75.96820, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, -76.128…
-## $ search_term             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;sneakers&quot;, &quot;sneakers&quot;, &quot;sneakers&quot;, &quot;sneakers&quot;, &quot;sneakers&quot;, &quot;sneakers&quot;, &quot;sneakers&quot;, &quot;snea…</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>shoes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;sneakers&quot;</span>,<span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">tennis shoes</span><span class="sc">\&quot;</span><span class="st">&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  shoes <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 500 tweets (if available)</span></span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/shoes.csv&quot;</span>)</span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div id="major-roads" class="section level3">
+<h3>Major Roads</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>roads <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;highway&quot;</span>,<span class="st">&quot;freeway&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  roads <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 2000 tweets (if available)</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/roads.csv&quot;</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Keeping previous search results.</code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>shoes <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="at">file =</span> <span class="st">&quot;../data/original/twitter/shoes.csv&quot;</span>) <span class="co"># read dataset from disk</span></span></code></pre></div>
-<pre><code>## Warning: One or more parsing issues, see `problems()` for details</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>shoes <span class="sc">%&gt;%</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(search_term, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["search_term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"pop","2":"2000"},{"1":"soda","2":"2000"},{"1":"coke","2":"1998"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
 </div>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>states_map <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">&quot;state&quot;</span>)  <span class="co"># from ggplot2</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_polygon</span>(<span class="at">data =</span> states_map, <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">group =</span> group),</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Tweets in the USA&quot;</span>, <span class="at">subtitle =</span> <span class="st">&quot;Shoes&quot;</span>)</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> shoes, <span class="fu">aes</span>(<span class="at">x =</span> lng, <span class="at">y =</span> lat, <span class="at">group =</span> <span class="dv">1</span>, <span class="at">color =</span> search_term),</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>)</span></code></pre></div>
-<pre><code>## Warning: Removed 5702 rows containing missing values (geom_point).</code></pre>
-<p><img src="1_acquire_data_files/figure-html/shoes-plot-1.png" width="672" /></p>
 </div>
-<div id="soft-drinks" class="section level1">
-<h1>soft drinks</h1>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>search_term <span class="ot">&lt;-</span> <span class="st">&quot;soda&quot;</span> <span class="co"># create a search_term variable</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>tweets <span class="ot">&lt;-</span> </span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">search_tweets</span>(<span class="at">q =</span> search_term, <span class="co"># query term (from search_term)</span></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">n =</span> <span class="dv">1000</span>, <span class="co"># number of desired tweets</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">include_rts =</span> <span class="cn">FALSE</span>, <span class="co"># no retweets</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">geocode =</span> <span class="fu">lookup_coords</span>(<span class="st">&quot;usa&quot;</span>), <span class="co"># only from US</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">token =</span> token) <span class="sc">%&gt;%</span>  <span class="co"># token for authentication</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lat_lng</span>() <span class="sc">%&gt;%</span> <span class="co"># extract the geocoordinates where available</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">search_term =</span> search_term) <span class="co"># add search_term value to the data frame</span></span></code></pre></div>
-<pre><code>## 
-Downloading [=======&gt;---------------------------------]  20%
-Downloading [===========&gt;-----------------------------]  30%
-Downloading [===============&gt;-------------------------]  40%
-Downloading [===================&gt;---------------------]  50%
-Downloading [========================&gt;----------------]  60%
-Downloading [============================&gt;------------]  70%
-Downloading [================================&gt;--------]  80%
-Downloading [====================================&gt;----]  90%
-Downloading [=========================================] 100%</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(tweets)</span></code></pre></div>
-<pre><code>## Rows: 1,000
-## Columns: 93
-## $ user_id                 [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;263764961&quot;, &quot;36992552&quot;, &quot;36992552&quot;, &quot;190287596&quot;, &quot;1351638653752238081&quot;, &quot;728157532833767…
-## $ status_id               [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1468221705311117325&quot;, &quot;1468221617994014736&quot;, &quot;1468220182061465600&quot;, &quot;1468221183208398851…
-## $ created_at              [3m[38;5;246m&lt;dttm&gt;[39m[23m 2021-12-07 14:11:47, 2021-12-07 14:11:26, 2021-12-07 14:05:44, 2021-12-07 14:09:42, 2021…
-## $ screen_name             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Chale333&quot;, &quot;mpolicastro&quot;, &quot;mpolicastro&quot;, &quot;ImThatDude501&quot;, &quot;PopNSodas&quot;, &quot;BlVck_Jesus93&quot;, …
-## $ text                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;@DoctorAnarchist In your opinion:\n\nif humans cut out fast/processed food, alcohol, sod…
-## $ source                  [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Twitter for iPhone&quot;, &quot;Twitter Web App&quot;, &quot;Twitter Web App&quot;, &quot;Twitter for iPhone&quot;, &quot;Twitte…
-## $ display_text_width      [3m[38;5;246m&lt;dbl&gt;[39m[23m 224, 87, 87, 59, 213, 31, 59, 66, 160, 160, 281, 156, 169, 169, 32, 10, 40, 95, 34, 63, 4…
-## $ reply_to_status_id      [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;1468153354891186183&quot;, NA, NA, NA, NA, &quot;1467916909169582089&quot;, &quot;1467963868391505923&quot;, NA, …
-## $ reply_to_user_id        [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;757402141971447809&quot;, NA, NA, NA, NA, &quot;470383386&quot;, &quot;1249988418945175554&quot;, NA, NA, NA, NA,…
-## $ reply_to_screen_name    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;DoctorAnarchist&quot;, NA, NA, NA, NA, &quot;PHLEaglesNation&quot;, &quot;Chashis_King&quot;, NA, NA, NA, NA, NA,…
-## $ is_quote                [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ is_retweet              [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ favorite_count          [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 2, 0, 0, 0, 10, 14, 2, 2, …
-## $ retweet_count           [3m[38;5;246m&lt;int&gt;[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,…
-## $ quote_count             [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ reply_count             [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ hashtags                [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &lt;&quot;soda&quot;, &quot;drinkreview&quot;, &quot;coffeecola&quot;, &quot;coffee&quot;&gt;, NA, NA, NA, NA, NA, &quot;Da…
-## $ symbols                 [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, &quot;Read&quot;, &quot;Read&quot;, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ urls_url                [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;businesswire.com/news/home/2021…&quot;, &quot;businesswire.com/news/home/2021…&quot;, NA, &quot;popnsod…
-## $ urls_t.co               [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://t.co/LX0ZHh5LPt&quot;, &quot;https://t.co/LuIquSRc0V&quot;, NA, &quot;https://t.co/LK654llcMa&quot;,…
-## $ urls_expanded_url       [3m[38;5;246m&lt;list&gt;[39m[23m NA, &quot;https://www.businesswire.com/news/home/20211207005358/en/Alation-Forges-Strategic-P…
-## $ media_url               [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &quot;http://pbs.twimg.com/media/FGArAXoXIAE7kyX.jpg&quot;, NA, NA, NA, NA, NA, &quot;h…
-## $ media_t.co              [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &quot;https://t.co/804JEpDfP3&quot;, NA, NA, NA, NA, NA, &quot;https://t.co/NbWezIBrtM&quot;…
-## $ media_expanded_url      [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &quot;https://twitter.com/PopNSodas/status/1468221081995599882/photo/1&quot;, NA, …
-## $ media_type              [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &quot;photo&quot;, NA, NA, NA, NA, NA, &quot;photo&quot;, &quot;photo&quot;, NA, NA, NA, NA, NA, NA, N…
-## $ ext_media_url           [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &quot;http://pbs.twimg.com/media/FGArAXoXIAE7kyX.jpg&quot;, NA, NA, NA, NA, NA, &quot;h…
-## $ ext_media_t.co          [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &quot;https://t.co/804JEpDfP3&quot;, NA, NA, NA, NA, NA, &quot;https://t.co/NbWezIBrtM&quot;…
-## $ ext_media_expanded_url  [3m[38;5;246m&lt;list&gt;[39m[23m NA, NA, NA, NA, &quot;https://twitter.com/PopNSodas/status/1468221081995599882/photo/1&quot;, NA, …
-## $ ext_media_type          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ mentions_user_id        [3m[38;5;246m&lt;list&gt;[39m[23m &quot;757402141971447809&quot;, &quot;119718228&quot;, &quot;119718228&quot;, NA, NA, &quot;470383386&quot;, &lt;&quot;12499884189451755…
-## $ mentions_screen_name    [3m[38;5;246m&lt;list&gt;[39m[23m &quot;DoctorAnarchist&quot;, &quot;Alation&quot;, &quot;Alation&quot;, NA, NA, &quot;PHLEaglesNation&quot;, &lt;&quot;Chashis_King&quot;, &quot;fa…
-## $ lang                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;es&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;fr&quot;, &quot;fr&quot;, &quot;en&quot;,…
-## $ quoted_status_id        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_text             [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_created_at       [3m[38;5;246m&lt;dttm&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ quoted_source           [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_favorite_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_retweet_count    [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_user_id          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_screen_name      [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_name             [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_followers_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_friends_count    [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_statuses_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_location         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_description      [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ quoted_verified         [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_status_id       [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_text            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_created_at      [3m[38;5;246m&lt;dttm&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
-## $ retweet_source          [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_favorite_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_retweet_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_user_id         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_screen_name     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_name            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_followers_count [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_friends_count   [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_statuses_count  [3m[38;5;246m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_location        [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_description     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ retweet_verified        [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ place_url               [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;https://api.twitter.com/1.1/geo/id/43d2418301bf1a49.json&quot;, NA, NA, NA, NA, N…
-## $ place_name              [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Mississippi&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Saint-Lin--Laurentides&quot;, &quot;Sai…
-## $ place_full_name         [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Mississippi, USA&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Saint-Lin--Laurentides, …
-## $ place_type              [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;admin&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;city&quot;, &quot;city&quot;, NA, NA, NA, NA, NA, …
-## $ country                 [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;United States&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;Canada&quot;, &quot;Canada&quot;, NA, NA, …
-## $ country_code            [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;US&quot;, NA, NA, NA, NA, NA, NA, NA, NA, &quot;CA&quot;, &quot;CA&quot;, NA, NA, NA, NA, NA, NA, NA,…
-## $ geo_coords              [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;…
-## $ coords_coords           [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;, &lt;NA, NA&gt;…
-## $ bbox_coords             [3m[38;5;246m&lt;list&gt;[39m[23m &lt;NA, NA, NA, NA, NA, NA, NA, NA&gt;, &lt;NA, NA, NA, NA, NA, NA, NA, NA&gt;, &lt;NA, NA, NA, NA, NA,…
-## $ status_url              [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://twitter.com/Chale333/status/1468221705311117325&quot;, &quot;https://twitter.com/mpolicast…
-## $ name                    [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;Chale&quot;, &quot;Matthew Policastro&quot;, &quot;Matthew Policastro&quot;, &quot;CitchesLoveCud&quot;, &quot;Pop &#39;N Sodas&quot;, &quot;V…
-## $ location                [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;United States&quot;, &quot;Los Angeles&quot;, &quot;Los Angeles&quot;, &quot;Trap&quot;, &quot;Kansas City&quot;, &quot;South Carolina, US…
-## $ description             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;music, politics, persuasion “autists will run the world”&quot;, &quot;Father, Husband, and Group V…
-## $ url                     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, &quot;https://t.co/lP9ZSgrFl1&quot;, &quot;https://t.co/lP9ZSgrFl1&quot;, NA, &quot;https://t.co/HcTr67LzkU&quot;, …
-## $ protected               [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ followers_count         [3m[38;5;246m&lt;int&gt;[39m[23m 402, 1189, 1189, 1748, 31, 43, 56, 154, 3446, 3446, 3094, 53, 91, 91, 3, 41, 1123, 16813,…
-## $ friends_count           [3m[38;5;246m&lt;int&gt;[39m[23m 1133, 2767, 2767, 1393, 54, 75, 1711, 106, 0, 0, 1419, 746, 620, 620, 2, 34, 919, 5502, 2…
-## $ listed_count            [3m[38;5;246m&lt;int&gt;[39m[23m 18, 72, 72, 14, 0, 0, 0, 0, 103, 103, 211, 140, 1, 1, 0, 0, 6, 406, 1, 1, 0, 0, 111, 0, 3…
-## $ statuses_count          [3m[38;5;246m&lt;int&gt;[39m[23m 47190, 18029, 18029, 148342, 124, 1175, 6271, 1497, 875816, 875816, 4597, 3971, 729, 729,…
-## $ favourites_count        [3m[38;5;246m&lt;int&gt;[39m[23m 13801, 1554, 1554, 19, 14, 2606, 6761, 189, 0, 0, 3415, 25400, 23, 23, 378, 263, 18248, 1…
-## $ account_created_at      [3m[38;5;246m&lt;dttm&gt;[39m[23m 2011-03-10 18:04:42, 2009-05-01 17:23:31, 2009-05-01 17:23:31, 2010-09-13 15:32:05, 2021…
-## $ verified                [3m[38;5;246m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
-## $ profile_url             [3m[38;5;246m&lt;chr&gt;[39m[23m NA, &quot;https://t.co/lP9ZSgrFl1&quot;, &quot;https://t.co/lP9ZSgrFl1&quot;, NA, &quot;https://t.co/HcTr67LzkU&quot;, …
-## $ profile_expanded_url    [3m[38;5;246m&lt;chr&gt;[39m[23m NA, &quot;http://www.businesswire.com&quot;, &quot;http://www.businesswire.com&quot;, NA, &quot;http://popnsodas.c…
-## $ account_lang            [3m[38;5;246m&lt;lgl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ profile_banner_url      [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;https://pbs.twimg.com/profile_banners/263764961/1610065120&quot;, &quot;https://pbs.twimg.com/prof…
-## $ profile_background_url  [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;http://abs.twimg.com/images/themes/theme1/bg.png&quot;, &quot;http://abs.twimg.com/images/themes/t…
-## $ profile_image_url       [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;http://pbs.twimg.com/profile_images/1439358662330421251/KVYyQwPm_normal.jpg&quot;, &quot;http://pb…
-## $ lat                     [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, 32.57103, NA, NA, NA, NA, NA, NA, NA, NA, 45.85304, 45.85304, NA, NA, NA, NA,…
-## $ lng                     [3m[38;5;246m&lt;dbl&gt;[39m[23m NA, NA, NA, -89.87645, NA, NA, NA, NA, NA, NA, NA, NA, -73.75736, -73.75736, NA, NA, NA, …
-## $ search_term             [3m[38;5;246m&lt;chr&gt;[39m[23m &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;soda&quot;, &quot;…</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>tonic <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;soda&quot;</span>,<span class="st">&quot;coke&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  tonic <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
-<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 500 tweets (if available)</span></span>
-<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
-<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/tonix.csv&quot;</span>)</span>
-<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<pre><code>## Keeping previous search results.</code></pre>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>tonix <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="at">file =</span> <span class="st">&quot;../data/original/twitter/tonix.csv&quot;</span>) <span class="co"># read dataset from disk</span></span></code></pre></div>
-<pre><code>## Warning: One or more parsing issues, see `problems()` for details</code></pre>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>tonix <span class="sc">%&gt;%</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(search_term, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="co"># preview</span></span></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["search_term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"coke","2":"2000"},{"1":"soda","2":"2000"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>states_map <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">&quot;state&quot;</span>)  <span class="co"># from ggplot2</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_polygon</span>(<span class="at">data =</span> states_map, <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">group =</span> group),</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Tweets in the USA&quot;</span>, <span class="at">subtitle =</span> <span class="st">&quot;Names For Soft Drinks&quot;</span>)</span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> tonix, <span class="fu">aes</span>(<span class="at">x =</span> lng, <span class="at">y =</span> lat, <span class="at">group =</span> <span class="dv">1</span>, <span class="at">color =</span> search_term),</span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>)</span></code></pre></div>
-<pre><code>## Warning: Removed 3797 rows containing missing values (geom_point).</code></pre>
-<p><img src="1_acquire_data_files/figure-html/tonix-plot-1.png" width="672" /></p>
-</div>
-<div id="roads" class="section level1">
-<h1>Roads</h1>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>roads <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;highway&quot;</span>,<span class="st">&quot;freeway&quot;</span>,<span class="st">&quot;expressway&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="at">path =</span> <span class="st">&quot;../data/original/twitter/&quot;</span>) <span class="co"># create &#39;twitter&#39; sub-directory in &#39;../data/original/&#39;</span></span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>conduct_search <span class="ot">&lt;-</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to conduct a new search</span></span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(conduct_search) {</span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Conducting new search. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  roads <span class="sc">%&gt;%</span> <span class="co"># terms to search</span></span>
-<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">map</span>(term_search, <span class="at">n =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> <span class="co"># apply the function to each term, retrieve 500 tweets (if available)</span></span>
-<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do_call_rbind</span>() <span class="sc">%&gt;%</span> <span class="co"># join the results by rows</span></span>
-<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">save_as_csv</span>(<span class="at">file_name =</span> <span class="st">&quot;../data/original/twitter/roads.csv&quot;</span>)</span>
-<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Search results saved to disk. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Keeping previous search results. </span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<pre><code>## Keeping previous search results.</code></pre>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>roads <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="at">file =</span> <span class="st">&quot;../data/original/twitter/roads.csv&quot;</span>) <span class="co"># read dataset from disk</span></span></code></pre></div>
-<pre><code>## Warning: One or more parsing issues, see `problems()` for details</code></pre>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>roads <span class="sc">%&gt;%</span></span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(search_term, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="co"># preview</span></span></code></pre></div>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["search_term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"expressway","2":"1000"},{"1":"freeway","2":"1000"},{"1":"highway","2":"1000"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>states_map <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">&quot;state&quot;</span>)  <span class="co"># from ggplot2</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_polygon</span>(<span class="at">data =</span> states_map, <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">group =</span> group),</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Tweets in the USA&quot;</span>, <span class="at">subtitle =</span> <span class="st">&quot;Names For Soft Drinks&quot;</span>)</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> roads, <span class="fu">aes</span>(<span class="at">x =</span> lng, <span class="at">y =</span> lat, <span class="at">group =</span> <span class="dv">1</span>, <span class="at">color =</span> search_term),</span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">size =</span> <span class="fl">1.5</span>)</span></code></pre></div>
-<pre><code>## Warning: Removed 2619 rows containing missing values (geom_point).</code></pre>
-<p><img src="1_acquire_data_files/figure-html/roads-plot-1.png" width="672" /></p>
 <div id="finalize" class="section level2">
 <h2>Finalize</h2>
 <div id="log" class="section level3">
 <h3>Log</h3>
-<!-- Any description that will be helpful to understand the results of this script and how it contributes to the aims of the project -->
-</div>
-<div id="session" class="section level3">
-<h3>Session</h3>
-<details>
-<summary>
-View session information
-</summary>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["package"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ondiskversion"],"name":[2],"type":["chr"],"align":["left"]},{"label":["loadedversion"],"name":[3],"type":["chr"],"align":["left"]},{"label":["path"],"name":[4],"type":["chr"],"align":["left"]},{"label":["loadedpath"],"name":[5],"type":["chr"],"align":["left"]},{"label":["attached"],"name":[6],"type":["lgl"],"align":["right"]},{"label":["is_base"],"name":[7],"type":["lgl"],"align":["right"]},{"label":["date"],"name":[8],"type":["chr"],"align":["left"]},{"label":["source"],"name":[9],"type":["chr"],"align":["left"]},{"label":["md5ok"],"name":[10],"type":["lgl"],"align":["right"]},{"label":["library"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"citr","2":"0.3.2","3":"0.3.2","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/citr","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/citr","6":"TRUE","7":"FALSE","8":"2021-08-20","9":"Github (crsh/citr@0e8243d)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"citr"},{"1":"dplyr","2":"1.0.7","3":"1.0.7","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/dplyr","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/dplyr","6":"TRUE","7":"FALSE","8":"2021-06-18","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"dplyr"},{"1":"forcats","2":"0.5.1","3":"0.5.1","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/forcats","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/forcats","6":"TRUE","7":"FALSE","8":"2021-01-27","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"forcats"},{"1":"ggplot2","2":"3.3.5","3":"3.3.5","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/ggplot2","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/ggplot2","6":"TRUE","7":"FALSE","8":"2021-06-25","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"ggplot2"},{"1":"httpuv","2":"1.6.3","3":"1.6.3","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/httpuv","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/httpuv","6":"TRUE","7":"FALSE","8":"2021-09-09","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"httpuv"},{"1":"knitr","2":"1.34","3":"1.34","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/knitr","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/knitr","6":"TRUE","7":"FALSE","8":"2021-09-09","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"knitr"},{"1":"pacman","2":"0.5.1","3":"0.5.1","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/pacman","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/pacman","6":"TRUE","7":"FALSE","8":"2019-03-11","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"pacman"},{"1":"purrr","2":"0.3.4","3":"0.3.4","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/purrr","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/purrr","6":"TRUE","7":"FALSE","8":"2020-04-17","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"purrr"},{"1":"readr","2":"2.0.1","3":"2.0.1","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/readr","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/readr","6":"TRUE","7":"FALSE","8":"2021-08-10","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"readr"},{"1":"rmarkdown","2":"2.11","3":"2.11","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/rmarkdown","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/rmarkdown","6":"TRUE","7":"FALSE","8":"2021-09-14","9":"CRAN (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"rmarkdown"},{"1":"rtweet","2":"0.7.0","3":"0.7.0","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/rtweet","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/rtweet","6":"TRUE","7":"FALSE","8":"2020-01-08","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"rtweet"},{"1":"rvest","2":"1.0.1","3":"1.0.1","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/rvest","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/rvest","6":"TRUE","7":"FALSE","8":"2021-07-26","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"rvest"},{"1":"sessioninfo","2":"1.1.1","3":"1.1.1","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/sessioninfo","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/sessioninfo","6":"TRUE","7":"FALSE","8":"2018-11-05","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"sessioninfo"},{"1":"stringr","2":"1.4.0","3":"1.4.0","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/stringr","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/stringr","6":"TRUE","7":"FALSE","8":"2019-02-10","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"stringr"},{"1":"tibble","2":"3.1.4","3":"3.1.4","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/tibble","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/tibble","6":"TRUE","7":"FALSE","8":"2021-08-25","9":"CRAN (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"tibble"},{"1":"tidyr","2":"1.1.3","3":"1.1.3","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/tidyr","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/tidyr","6":"TRUE","7":"FALSE","8":"2021-03-03","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"tidyr"},{"1":"tidyverse","2":"1.3.1","3":"1.3.1","4":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/tidyverse","5":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1/tidyverse","6":"TRUE","7":"FALSE","8":"2021-04-15","9":"RSPM (R 4.1.0)","10":"NA","11":"/cloud/lib/x86_64-pc-linux-gnu-library/4.1","_rn_":"tidyverse"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-</details>
+<p>This script should create five CSV files that appear within your project, bearing the names given to them by the save_as_csv() function.</p>
 </div>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>
-</div>
+<p>Vaux, Bert. “Harvard Dialect Survey.” Harvard Dialect Survey, 2003, <a href="http://dialect.redlog.net" class="uri">http://dialect.redlog.net</a>.</p>
 </div>
 
 

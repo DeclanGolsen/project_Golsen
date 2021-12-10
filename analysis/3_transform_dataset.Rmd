@@ -9,109 +9,57 @@ biblio-style: apalike
 
 ### Description
 
-<!-- The aim of this script -->
+This script updates the CSV files created in the 'Acquire Data' section to include information regarding the state and Census Burea region of origin for each tweet.
 
 ### Usage
 
-<!-- How to run this script: what input it requires and output produced -->
+Within the "updated_plurals <- left_join(join_tweets_to_states(plurals),census_regions)" line of code, replace "updated_plurals" and "plurals" with the name of your updated CSV and the original CSV, respectively. Do this for each group of terms analyzed.
 
 ## Setup
 
 ```{r setup}
 # Script-specific options or packages
-
+# None are necessary in this part of the project
 ```
 
 ## Run
 
 ### Second Person Plurals
 
-```{r}
-updated_plurals <- left_join(join_tweets_to_states(plurals),census_regions)
-left_join(join_tweets_to_states(plurals),census_regions)
-```
-
-```{r}
-updated_plurals %>% 
-  select(search_term, census_region) %>% # select key variables
-  skim() %>% # get custom data summary
-  yank("factor") # only show factor-oriented information
+```{r update-plurals}
+updated_plurals <- left_join(join_tweets_to_states(plurals),census_regions) # adds census regions to the plurals CSV
 ```
 
 ### Outdoor Sales
 
-```{r}
-updated_sales <- left_join(join_tweets_to_states(sale),census_regions)
-left_join(join_tweets_to_states(sale),census_regions)
-```
-
-```{r}
-updated_sales %>% 
-  select(search_term, census_region) %>% # select key variables
-  skim() %>% # get custom data summary
-  yank("factor") # only show factor-oriented information
+```{r update-sales}
+updated_sales <- left_join(join_tweets_to_states(sale),census_regions) # adds census regions to the plurals CSV
 ```
 
 ### Gym Shoes
 
-```{r}
-updated_shoes <- left_join(join_tweets_to_states(shoes),census_regions)
-left_join(join_tweets_to_states(shoes),census_regions)
-```
-
-```{r}
-updated_shoes %>% 
-  select(search_term, census_region) %>% # select key variables
-  skim() %>% # get custom data summary
-  yank("factor") # only show factor-oriented information
+```{r update-shoes}
+updated_shoes <- left_join(join_tweets_to_states(shoes),census_regions) # adds census regions to the plurals CSV
 ```
 
 ### Soft Drinks
 
-```{r}
-updated_tonix <- left_join(join_tweets_to_states(tonix),census_regions)
-left_join(join_tweets_to_states(tonix),census_regions)
-```
-
-```{r}
-updated_tonix %>% 
-  select(search_term, census_region) %>% # select key variables
-  skim() %>% # get custom data summary
-  yank("factor") # only show factor-oriented information
+```{r update-tonix}
+updated_tonix <- left_join(join_tweets_to_states(tonix),census_regions) # adds census regions to the plurals CSV
 ```
 
 ### Major Roads
 
-```{r}
-updated_roads <- left_join(join_tweets_to_states(roads),census_regions)
-left_join(join_tweets_to_states(roads),census_regions)
+```{r update-roads}
+updated_roads <- left_join(join_tweets_to_states(roads),census_regions) # adds census regions to the plurals CSV
 ```
-
-```{r}
-updated_roads %>% 
-  select(search_term, census_region) %>% # select key variables
-  skim() %>% # get custom data summary
-  yank("factor") # only show factor-oriented information
-```
-<!-- Steps involved in transforming the data for analysis -->
 
 ## Finalize
 
 ### Log
 
-<!-- Any description that will be helpful to understand the results of this script and how it contributes to the aims of the project -->
-
-### Session
-
-<details><summary>View session information</summary>
-
-```{r, child="_session-info.Rmd"}
-```
-
-</details>
-
-```{r cleanup, echo=FALSE}
-rm(list = ls()) # clean working environment
-```
+If everything runs as it should, there should be no output from this code.
 
 ## References
+
+  Vaux, Bert. “Harvard Dialect Survey.” Harvard Dialect Survey, 2003, http://dialect.redlog.net.

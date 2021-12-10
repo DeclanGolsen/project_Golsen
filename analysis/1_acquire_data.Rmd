@@ -2,6 +2,7 @@
 title: "Acquire data"
 date: "`r Sys.Date()`"
 bibliography: references.bib
+output: pdf_document
 biblio-style: apalike
 ---
 
@@ -9,14 +10,11 @@ biblio-style: apalike
 
 ### Description
 
-<!-- The aim of this script --> 
-
+This script is crucial to acquiring the Twitter data around which the whole project is based. After initially loading the necessary libraries and creating the term_search function, tweets including any search term can be acquired. As seen below, I used the same code to create the five groups of search terms used for this project, with only the "terms to search" line of code, the name of the CSV created, and "n = ..." changing; the "terms to search" line of code should be replaced with the name given to your group of terms, the name of the CSV should be changed to whatever makes the most sense for you, and "n = ..." should be replaced with the number of tweets containing each term you want to acquire.
 
 ### Usage
 
-<!-- How to run this script: what input it requires and output produced --> 
-
-
+API keys for both Twitter and the Census are necessary for this project. Once these have been acquired, simply run the requisite packages and substitute the terms and quantities seen here with your own.
 
 ## Setup
 
@@ -27,15 +25,10 @@ library(rtweet)  # collecting tweets from Twitter API
 library(rvest)  # webscraping
 library(purrr)  # iteration
 library(sf)
+library(tidycensus)
 
 token = readRDS("../golsen_token.rds") # read personal Twitter API token
 ```
-
-```{r}
-library(tidycensus)
-tidycensus::census_api_key("653148a918713e30f3db5d44b66b692a339a2c88")
-```
-
 
 ## Run
 
@@ -132,7 +125,7 @@ if(conduct_search) {
   
   
   shoes %>% # terms to search
-    map(term_search, n = 1000) %>% # apply the function to each term, retrieve 500 tweets (if available)
+    map(term_search, n = 1000) %>% # apply the function to each term, retrieve 1000 tweets (if available)
     do_call_rbind() %>% # join the results by rows
     save_as_csv(file_name = "../data/original/twitter/shoes.csv")
   cat("Search results saved to disk. \n")
@@ -160,7 +153,7 @@ if(conduct_search) {
   
   
   tonic %>% # terms to search
-    map(term_search, n = 2000) %>% # apply the function to each term, retrieve 500 tweets (if available)
+    map(term_search, n = 2000) %>% # apply the function to each term, retrieve 2000 tweets (if available)
     do_call_rbind() %>% # join the results by rows
     save_as_csv(file_name = "../data/original/twitter/tonix.csv")
   cat("Search results saved to disk. \n")
@@ -188,7 +181,7 @@ if(conduct_search) {
   
   
   roads %>% # terms to search
-    map(term_search, n = 2000) %>% # apply the function to each term, retrieve 500 tweets (if available)
+    map(term_search, n = 2000) %>% # apply the function to each term, retrieve 2000 tweets (if available)
     do_call_rbind() %>% # join the results by rows
     save_as_csv(file_name = "../data/original/twitter/roads.csv")
   cat("Search results saved to disk. \n")
@@ -203,19 +196,8 @@ if(conduct_search) {
 
 ### Log
 
-<!-- Any description that will be helpful to understand the results of this script and how it contributes to the aims of the project -->
-
-### Session
-
-<details><summary>View session information</summary>
-
-```{r, child="_session-info.Rmd"}
-```
-
-</details>
-
-```{r cleanup, echo=FALSE}
-rm(list = ls()) # clean working environment
-```
+This script should create five CSV files that appear within your project, bearing the names given to them by the save_as_csv() function.
 
 ## References
+
+  Vaux, Bert. “Harvard Dialect Survey.” Harvard Dialect Survey, 2003, http://dialect.redlog.net.

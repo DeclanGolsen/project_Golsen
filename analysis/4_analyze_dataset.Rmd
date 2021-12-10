@@ -9,11 +9,11 @@ biblio-style: apalike
 
 ### Description
 
-<!-- The aim of this script -->
+This section is by far the busiest of the four that precede the article. In this section bar charts and maps are created for each of the groups of terms, and chi-squared tests are conducted on each to determine the nature of each term's distribution. These three features serve as the foundation for all prose analysis about the data.
 
 ### Usage
 
-<!-- How to run this script: what input it requires and output produced -->
+After loading in the necessary packages, code should be run for each updated CSV creating a bar chart, a contingency table, and a map, as well as code conducting a chi-square test and further analysis on the results of this test. The chunks necessary for these actions are labeled below, and the only thing that needs to be changed out is the name of the updated CSV.
 
 ## Setup
 
@@ -31,7 +31,7 @@ library(effectsize)
 
 ### Second Person Plurals
 
-```{r}
+```{r plurals-contingency}
 updated_plurals %>% 
   tabyl(search_term, census_region) %>% # cross-tabulate
   adorn_totals(c("row", "col")) %>% # provide row and column totals
@@ -43,7 +43,7 @@ updated_plurals %>%
         caption = "Contingency table for `search_term` and `census_region`.") # caption
 ```
 
-```{r}
+```{r plurals-barchart, echo=TRUE}
 p1 <- 
   updated_plurals %>% # dataset
   ggplot(aes(x = census_region, fill = search_term)) + # mappings
@@ -61,7 +61,7 @@ p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
 p1 + p2 + plot_annotation("Distribution of Second Person Plurals Across the United States")
 ```
 
-```{r}
+```{r plurals-chi-test, warning=FALSE}
 ror_mod_table <- 
   xtabs(formula = ~ census_region + search_term, # formula 
         data = updated_plurals) # dataset
@@ -79,12 +79,12 @@ c2$p.value < .05 # confirm p-value below .05
 #> [1] TRUE
 ```
 
-```{r}
+```{r plurals-chi-deets}
 c2 %>% # statistical result
   augment() # view detailed statistical test information
 ```
 
-```{r}
+```{r plurals-chi-ci}
 effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
 
 effects  # preview effect size and confidence interval
@@ -97,7 +97,7 @@ interpret_r(effects$Cramers_v)  # interpret the effect size
 #> (Rules: funder2019)
 ```
 
-```{r second-person-plurals-plot}
+```{r second-person-plurals-plot, warning=FALSE}
 states_map <- map_data("state")  # from ggplot2
 
 p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
@@ -109,7 +109,7 @@ p + geom_point(data = plurals, aes(x = lng, y = lat, group = 1, color = search_t
 
 ### Outdoor Sales
 
-```{r}
+```{r sales-contingency}
 updated_sales %>% 
   tabyl(search_term, census_region) %>% # cross-tabulate
   adorn_totals(c("row", "col")) %>% # provide row and column totals
@@ -121,7 +121,7 @@ updated_sales %>%
         caption = "Contingency table for `search_term` and `census_region`.") # caption
 ```
 
-```{r}
+```{r sales-barchart}
 p1 <- 
   updated_sales %>% # dataset
   ggplot(aes(x = census_region, fill = search_term)) + # mappings
@@ -136,10 +136,10 @@ p2 <-
 
 p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
 
-p1 + p2 + plot_annotation("Relationship between Realization of recipient and Modality.")
+p1 + p2 + plot_annotation("Distribution of Terms for Outdoor Sales Across the US")
 ```
 
-```{r}
+```{r sales-chi-test, warning=FALSE}
 ror_mod_table <- 
   xtabs(formula = ~ census_region + search_term, # formula 
         data = updated_sales) # dataset
@@ -157,12 +157,12 @@ c2$p.value < .05 # confirm p-value below .05
 #> [1] TRUE
 ```
 
-```{r}
+```{r sales-chi-deets}
 c2 %>% # statistical result
   augment() # view detailed statistical test information
 ```
 
-```{r}
+```{r sale-chi-ci}
 effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
 
 effects  # preview effect size and confidence interval
@@ -185,19 +185,9 @@ p + geom_point(data = sale, aes(x = lng, y = lat, group = 1, color = search_term
     alpha = 1/2, size = 1.5)
 ```
 
-```{r garage-sale-plot, warning=FALSE}
-states_map <- map_data("state")  # from ggplot2
-
-p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
-    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Outdoor Sales")
-
-p + geom_point(data = sale, aes(x = lng, y = lat, group = 1, color = search_term),
-    alpha = 1/2, size = 1.5)
-```
-
 ### Gym Shoes
 
-```{r}
+```{r shoes-contingency}
 updated_shoes %>% 
   tabyl(search_term, census_region) %>% # cross-tabulate
   adorn_totals(c("row", "col")) %>% # provide row and column totals
@@ -209,7 +199,7 @@ updated_shoes %>%
         caption = "Contingency table for `search_term` and `census_region`.") # caption
 ```
 
-```{r}
+```{r shoes-barchart}
 p1 <- 
   updated_shoes %>% # dataset
   ggplot(aes(x = census_region, fill = search_term)) + # mappings
@@ -227,7 +217,7 @@ p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
 p1 + p2 + plot_annotation("Distribution of Terms for Gym Shoes Across the United States")
 ```
 
-```{r}
+```{r shoes-chi-test}
 ror_mod_table <- 
   xtabs(formula = ~ census_region + search_term, # formula 
         data = updated_shoes) # dataset
@@ -245,12 +235,12 @@ c2$p.value < .05 # confirm p-value below .05
 #> [1] TRUE
 ```
 
-```{r}
+```{r shoes-chi-deets}
 c2 %>% # statistical result
   augment() # view detailed statistical test information
 ```
 
-```{r}
+```{r shoes-chi-ci}
 effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
 
 effects  # preview effect size and confidence interval
@@ -275,7 +265,7 @@ p + geom_point(data = shoes, aes(x = lng, y = lat, group = 1, color = search_ter
 
 ### Soft Drinks
 
-```{r}
+```{r tonix-contingency}
 updated_tonix %>% 
   tabyl(search_term, census_region) %>% # cross-tabulate
   adorn_totals(c("row", "col")) %>% # provide row and column totals
@@ -287,7 +277,7 @@ updated_tonix %>%
         caption = "Contingency table for `search_term` and `census_region`.") # caption
 ```
 
-```{r}
+```{r tonix-barchart}
 p1 <- 
   updated_tonix %>% # dataset
   ggplot(aes(x = census_region, fill = search_term)) + # mappings
@@ -302,10 +292,10 @@ p2 <-
 
 p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
 
-p1 + p2 + plot_annotation("Relationship between Realization of recipient and Modality.")
+p1 + p2 + plot_annotation("Distribution of Terms for Soft Drinks Across the US")
 ```
 
-```{r}
+```{r tonix-chi-test}
 ror_mod_table <- 
   xtabs(formula = ~ census_region + search_term, # formula 
         data = updated_tonix) # dataset
@@ -323,12 +313,12 @@ c2$p.value < .05 # confirm p-value below .05
 #> [1] TRUE
 ```
 
-```{r}
+```{r tonix-chi-deets}
 c2 %>% # statistical result
   augment() # view detailed statistical test information
 ```
 
-```{r}
+```{r tonix-chi-ci}
 effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
 
 effects  # preview effect size and confidence interval
@@ -345,7 +335,7 @@ interpret_r(effects$Cramers_v)  # interpret the effect size
 states_map <- map_data("state")  # from ggplot2
 
 p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
-    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Names For Soft Drinks")
+    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Soft Drinks")
 
 p + geom_point(data = tonix, aes(x = lng, y = lat, group = 1, color = search_term),
     alpha = 1/2, size = 1.5)
@@ -353,7 +343,7 @@ p + geom_point(data = tonix, aes(x = lng, y = lat, group = 1, color = search_ter
 
 ### Major Roads
 
-```{r}
+```{r roads-contingency}
 updated_roads %>% 
   tabyl(search_term, census_region) %>% # cross-tabulate
   adorn_totals(c("row", "col")) %>% # provide row and column totals
@@ -365,7 +355,7 @@ updated_roads %>%
         caption = "Contingency table for `search_term` and `census_region`.") # caption
 ```
 
-```{r}
+```{r roads-barchart}
 p1 <- 
   updated_roads %>% # dataset
   ggplot(aes(x = census_region, fill = search_term)) + # mappings
@@ -380,10 +370,10 @@ p2 <-
 
 p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
 
-p1 + p2 + plot_annotation("Relationship between Realization of recipient and Modality.")
+p1 + p2 + plot_annotation("Distribution of Terms for Major Roads Across the US")
 ```
 
-```{r}
+```{r roads-chi-test}
 ror_mod_table <- 
   xtabs(formula = ~ census_region + search_term, # formula 
         data = updated_roads) # dataset
@@ -401,12 +391,12 @@ c2$p.value < .05 # confirm p-value below .05
 #> [1] TRUE
 ```
 
-```{r}
+```{r roads-chi-deets}
 c2 %>% # statistical result
   augment() # view detailed statistical test information
 ```
 
-```{r}
+```{r roads-chi-ci}
 effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
 
 effects  # preview effect size and confidence interval
@@ -423,7 +413,7 @@ interpret_r(effects$Cramers_v)  # interpret the effect size
 states_map <- map_data("state")  # from ggplot2
 
 p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
-    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Word for Major Roads")
+    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Major Roads")
 
 p + geom_point(data = roads, aes(x = lng, y = lat, group = 1, color = search_term),
     alpha = 1/2, size = 1.5)
@@ -433,19 +423,8 @@ p + geom_point(data = roads, aes(x = lng, y = lat, group = 1, color = search_ter
 
 ### Log
 
-<!-- Any description that will be helpful to understand the results of this script and how it contributes to the aims of the project -->
-
-### Session
-
-<details><summary>View session information</summary>
-
-```{r, child="_session-info.Rmd"}
-```
-
-</details>
-
-```{r cleanup, echo=FALSE}
-rm(list = ls()) # clean working environment
-```
+This code should produce bar charts, contingency tables, maps, and information about each chi-squaured test conducted.
 
 ## References
+
+  Vaux, Bert. “Harvard Dialect Survey.” Harvard Dialect Survey, 2003, http://dialect.redlog.net.

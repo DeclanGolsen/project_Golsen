@@ -167,10 +167,16 @@ The distribution of terms for major roads, "highway" and "freeway" followed prev
 
 # Discussion
 
-<!-- and a review and discussion of the findings -->
-
-Response goes here...
+As the results above demonstrate, regional vocabulary as seen on Twitter was not conclusively found to emulate the distribution noted in academic dialect surveys. Because of some potential concerns with the data, such as small sample sizes and terms with multiple meanings, it cannot be said that regional terms are less frequently used on Twitter, however; and because terms for major roads and gym shoes have been found to vary significantly across the different regions of the country, it can be said that, at least in some cases, regional terms do persist in English used online, and are not restricted to spoken English. The persistence of regionalisms may point to English as used on Twitter bearing greater resemblance to spoken English than formal written English, which usually loses almost all traces of regional variety.
 
 # Conclusion
 
+The only empirical conclusion that can be drawn from these findings is that terms for major roads and gym shoes as seen in tweets vary significantly across the four Census Bureau designated regions of the United States, findings which match regional variations attested to in several past dialect surveys. Whether other regional varieties are less or more pronounced on Twitter is impossible to say, but from these findings it seems as though at least some elements of regional distinctions make their way onto Twitter. Thus, the hypothesis for this project was affirmed in part, though not entirely, and it can safely be said that twitter users do not completely assimilate their vocabulary to General American English when writing tweets.
+
 # References
+
+  Vaux, Bert. “Harvard Dialect Survey.” Harvard Dialect Survey, 2003, http://dialect.redlog.net.
+  
+  Katz, Josh. “Dialect Survey.” Josh Katz, 2013, http://joshkatz.co/dialect.html.
+
+  Grieve, Jack, et al. “Mapping Lexical Dialect Variation in British English Using Twitter.” Frontiers in Artificial Intelligence, vol. 2, 2019, p. 11, doi:10.3389/frai.2019.00011.

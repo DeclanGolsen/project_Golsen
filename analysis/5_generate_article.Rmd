@@ -22,7 +22,14 @@ abstract: |
 pacman::p_load(citr, magrittr, knitr, ggplot2)
 
 # Configure default options for knitr code chunks
-knitr::opts_chunk$set(fig.width=6, fig.asp = 0.7, fig.align='center', echo=FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.asp = 0.7,
+	fig.width = 6,
+	message = FALSE,
+	warning = FALSE
+)
 ```
 
 # Introduction
@@ -59,21 +66,11 @@ Maps of the distribution of opposing terms, as well as bar charts demonstrating 
 
 # Results
 
-```{r roads-plot, warning=FALSE}
-states_map <- map_data("state")  # from ggplot2
-
-p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
-    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Word for Major Roads")
-
-p + geom_point(data = roads, aes(x = lng, y = lat, group = 1, color = search_term),
-    alpha = 1/2, size = 1.5)
-```
-
 Of the five groups of terms tested, only two were found to vary in a statistically significant way, per the chi-squared test. Exploratory analysis also revealed that the distribution of some groups of terms stands in stark contrast to the documented in Vaux's and Katz's dialect surveys. For detailed analysis, these results will be broken down on a group-by-group basis.
 
 ## Second Person Plurals
 
-```{r}
+```{r plurals-barchart, eval=FALSE, include=FALSE}
 p1 <- 
   updated_plurals %>% # dataset
   ggplot(aes(x = census_region, fill = search_term)) + # mappings
@@ -95,7 +92,7 @@ Seen above are bar charts showing the distribution of second person plurals, a f
 
 ### Outdoor Sales
 
-```{r garage-sale-plot, warning=FALSE}
+```{r garage-sale-plot, eval=FALSE, warning=FALSE, include=FALSE}
 states_map <- map_data("state")  # from ggplot2
 
 p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
@@ -109,7 +106,7 @@ The terms "garage sale" and "yard sale", while well known and used with some fre
 
 ### Gym Shoes
 
-```{r}
+```{r shoes-barchart, eval=FALSE, include=FALSE}
 p1 <- 
   updated_shoes %>% # dataset
   ggplot(aes(x = census_region, fill = search_term)) + # mappings
@@ -131,7 +128,7 @@ Although these findings don't quite line up with what past dialect surveys have 
 
 ### Soft Drinks
 
-```{r}
+```{r tonix-barchart, eval=FALSE, include=FALSE}
 p1 <- 
   updated_tonix %>% # dataset
   ggplot(aes(x = census_region, fill = search_term)) + # mappings
@@ -153,7 +150,7 @@ Terms for Soft Drinks likely suffered more than any other group from confounding
 
 ### Major Roads
 
-```{r roads-plot, warning=FALSE}
+```{r roads-plott, eval=FALSE, warning=FALSE, include=FALSE}
 states_map <- map_data("state")  # from ggplot2
 
 p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),

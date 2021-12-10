@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2021-12-07" />
+<meta name="date" content="2021-12-10" />
 
 <title>Project Title</title>
 
@@ -156,6 +156,28 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 
 
@@ -488,7 +510,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Project Title</h1>
-<h4 class="date">2021-12-07</h4>
+<h4 class="date">2021-12-10</h4>
 
 </div>
 
@@ -499,7 +521,7 @@ div.tocify {
 <div id="research-area-and-problem" class="section level3">
 <h3>Research area and problem</h3>
 <p>The research area for this project will be dialectology, and the ability of API-based corpora to capture elements of regional dialect variation.</p>
-<p>The uncertainty surrounding typed-language’s ability to capture distinctive, regional aspects of language use.</p>
+<p>The uncertainty surrounding typed-language’s ability to capture distinctive, regional aspects of language use. <span class="citation">(Clopper and Pisoni 2006; Grieve et al. 2019; Moisl, n.d.; Nguyen et al. 2017; Yumpu.com, n.d.; Zaghouani and Charfi 2018; Szmrecsanyi and Wolk 2011)</span></p>
 </div>
 <div id="research-aim-and-question" class="section level3">
 <h3>Research aim and question</h3>
@@ -513,10 +535,10 @@ div.tocify {
 <h3>Session</h3>
 <details>
 <summary>
-View session information
+<p>View session information</p>
 </summary>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span></code></pre></div>
-<pre><code>## ─ Session info ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ─ Session info ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  setting  value                       
 ##  version  R version 4.1.0 (2021-05-18)
 ##  os       Ubuntu 20.04.3 LTS          
@@ -526,34 +548,41 @@ View session information
 ##  collate  C.UTF-8                     
 ##  ctype    C.UTF-8                     
 ##  tz       UTC                         
-##  date     2021-12-07                  
+##  date     2021-12-10                  
 ## 
-## ─ Packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ─ Packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ##  package     * version date       lib source                    
-##  askpass       1.1     2019-01-13 [1] RSPM (R 4.1.0)            
 ##  assertthat    0.2.1   2019-03-21 [1] RSPM (R 4.1.0)            
 ##  backports     1.2.1   2020-12-09 [1] RSPM (R 4.1.0)            
+##  base64enc     0.1-3   2015-07-28 [1] RSPM (R 4.1.0)            
+##  bayestestR    0.11.5  2021-10-30 [1] RSPM (R 4.1.0)            
 ##  bit           4.0.4   2020-08-04 [1] RSPM (R 4.1.0)            
 ##  bit64         4.0.5   2020-08-30 [1] RSPM (R 4.1.0)            
 ##  bookdown      0.24    2021-09-02 [1] RSPM (R 4.1.0)            
-##  broom         0.7.9   2021-07-27 [1] RSPM (R 4.1.0)            
+##  broom       * 0.7.9   2021-07-27 [1] RSPM (R 4.1.0)            
 ##  bslib         0.3.0   2021-09-02 [1] RSPM (R 4.1.0)            
 ##  cellranger    1.1.0   2016-07-27 [1] RSPM (R 4.1.0)            
 ##  citr        * 0.3.2   2021-08-20 [1] Github (crsh/citr@0e8243d)
+##  class         7.3-19  2021-05-03 [2] CRAN (R 4.1.0)            
+##  classInt      0.4-3   2020-04-07 [1] RSPM (R 4.1.0)            
 ##  cli           3.0.1   2021-07-17 [1] RSPM (R 4.1.0)            
 ##  colorspace    2.0-2   2021-06-24 [1] RSPM (R 4.1.0)            
 ##  crayon        1.4.1   2021-02-08 [1] RSPM (R 4.1.0)            
 ##  curl          4.3.2   2021-06-23 [1] RSPM (R 4.1.0)            
+##  datawizard    0.2.1   2021-10-04 [1] RSPM (R 4.1.0)            
 ##  DBI           1.1.1   2021-01-15 [1] RSPM (R 4.1.0)            
 ##  dbplyr        2.1.1   2021-04-06 [1] RSPM (R 4.1.0)            
 ##  digest        0.6.27  2020-10-24 [1] RSPM (R 4.1.0)            
 ##  dplyr       * 1.0.7   2021-06-18 [1] RSPM (R 4.1.0)            
+##  e1071         1.7-8   2021-07-28 [1] RSPM (R 4.1.0)            
+##  effectsize  * 0.5     2021-10-04 [1] RSPM (R 4.1.0)            
 ##  ellipsis      0.3.2   2021-04-29 [1] RSPM (R 4.1.0)            
 ##  evaluate      0.14    2019-05-28 [1] RSPM (R 4.1.0)            
 ##  fansi         0.5.0   2021-05-25 [1] RSPM (R 4.1.0)            
 ##  farver        2.1.0   2021-02-28 [1] RSPM (R 4.1.0)            
 ##  fastmap       1.1.0   2021-01-25 [1] RSPM (R 4.1.0)            
 ##  forcats     * 0.5.1   2021-01-27 [1] RSPM (R 4.1.0)            
+##  foreign       0.8-81  2020-12-22 [2] CRAN (R 4.1.0)            
 ##  fs            1.5.0   2020-07-31 [1] RSPM (R 4.1.0)            
 ##  generics      0.1.0   2020-10-31 [1] RSPM (R 4.1.0)            
 ##  ggplot2     * 3.3.5   2021-06-25 [1] RSPM (R 4.1.0)            
@@ -563,10 +592,13 @@ View session information
 ##  highr         0.9     2021-04-16 [1] RSPM (R 4.1.0)            
 ##  hms           1.1.0   2021-05-17 [1] RSPM (R 4.1.0)            
 ##  htmltools     0.5.2   2021-08-25 [1] RSPM (R 4.1.0)            
-##  httpuv      * 1.6.3   2021-09-09 [1] RSPM (R 4.1.0)            
+##  httpuv        1.6.3   2021-09-09 [1] RSPM (R 4.1.0)            
 ##  httr          1.4.2   2020-07-20 [1] RSPM (R 4.1.0)            
+##  insight       0.14.5  2021-10-16 [1] RSPM (R 4.1.0)            
+##  janitor     * 2.1.0   2021-01-05 [1] RSPM (R 4.1.0)            
 ##  jquerylib     0.1.4   2021-04-26 [1] RSPM (R 4.1.0)            
 ##  jsonlite      1.7.2   2020-12-09 [1] RSPM (R 4.1.0)            
+##  KernSmooth    2.23-20 2021-05-03 [2] CRAN (R 4.1.0)            
 ##  knitr       * 1.34    2021-09-09 [1] RSPM (R 4.1.0)            
 ##  labeling      0.4.2   2020-10-20 [1] RSPM (R 4.1.0)            
 ##  later         1.3.0   2021-08-18 [1] CRAN (R 4.1.0)            
@@ -575,48 +607,61 @@ View session information
 ##  lubridate     1.7.10  2021-02-26 [1] RSPM (R 4.1.0)            
 ##  magrittr    * 2.0.1   2020-11-17 [1] RSPM (R 4.1.0)            
 ##  maps          3.4.0   2021-09-25 [1] RSPM (R 4.1.0)            
-##  Matrix        1.3-3   2021-05-04 [2] CRAN (R 4.1.0)            
-##  mgcv          1.8-35  2021-04-18 [2] CRAN (R 4.1.0)            
+##  maptools      1.1-2   2021-09-07 [1] RSPM (R 4.1.0)            
 ##  mime          0.11    2021-06-23 [1] RSPM (R 4.1.0)            
 ##  miniUI        0.1.1.1 2018-05-18 [1] RSPM (R 4.1.0)            
 ##  modelr        0.1.8   2020-05-19 [1] RSPM (R 4.1.0)            
 ##  munsell       0.5.0   2018-06-12 [1] RSPM (R 4.1.0)            
-##  nlme          3.1-152 2021-02-04 [2] CRAN (R 4.1.0)            
-##  openssl       1.4.5   2021-09-02 [1] RSPM (R 4.1.0)            
 ##  pacman      * 0.5.1   2019-03-11 [1] RSPM (R 4.1.0)            
+##  parameters    0.15.0  2021-10-18 [1] RSPM (R 4.1.0)            
+##  patchwork   * 1.1.1   2020-12-17 [1] RSPM (R 4.1.0)            
+##  performance   0.8.0   2021-10-01 [1] RSPM (R 4.1.0)            
 ##  pillar        1.6.2   2021-07-29 [1] RSPM (R 4.1.0)            
 ##  pkgconfig     2.0.3   2019-09-22 [1] RSPM (R 4.1.0)            
-##  prettyunits   1.1.1   2020-01-24 [1] RSPM (R 4.1.0)            
-##  progress      1.2.2   2019-05-16 [1] RSPM (R 4.1.0)            
 ##  promises      1.2.0.1 2021-02-11 [1] RSPM (R 4.1.0)            
+##  proxy         0.4-26  2021-06-07 [1] RSPM (R 4.1.0)            
 ##  purrr       * 0.3.4   2020-04-17 [1] RSPM (R 4.1.0)            
 ##  R6            2.5.1   2021-08-19 [1] CRAN (R 4.1.0)            
+##  rappdirs      0.3.3   2021-01-31 [1] RSPM (R 4.1.0)            
 ##  Rcpp          1.0.7   2021-07-07 [1] RSPM (R 4.1.0)            
 ##  readr       * 2.0.1   2021-08-10 [1] RSPM (R 4.1.0)            
 ##  readxl        1.3.1   2019-03-13 [1] RSPM (R 4.1.0)            
+##  repr          1.1.3   2021-01-21 [1] RSPM (R 4.1.0)            
 ##  reprex        2.0.1   2021-08-05 [1] RSPM (R 4.1.0)            
+##  rgdal         1.5-26  2021-09-15 [1] CRAN (R 4.1.0)            
 ##  rlang         0.4.11  2021-04-30 [1] RSPM (R 4.1.0)            
 ##  rmarkdown   * 2.11    2021-09-14 [1] CRAN (R 4.1.0)            
 ##  rsconnect     0.8.24  2021-08-05 [1] RSPM (R 4.1.0)            
 ##  rstudioapi    0.13    2020-11-12 [1] RSPM (R 4.1.0)            
 ##  rtweet      * 0.7.0   2020-01-08 [1] RSPM (R 4.1.0)            
 ##  rvest       * 1.0.1   2021-07-26 [1] RSPM (R 4.1.0)            
+##  s2            1.0.6   2021-06-17 [1] RSPM (R 4.1.0)            
 ##  sass          0.4.0   2021-05-12 [1] RSPM (R 4.1.0)            
 ##  scales        1.1.1   2020-05-11 [1] RSPM (R 4.1.0)            
 ##  sessioninfo * 1.1.1   2018-11-05 [1] RSPM (R 4.1.0)            
+##  sf          * 1.0-2   2021-07-26 [1] RSPM (R 4.1.0)            
 ##  shiny         1.6.0   2021-01-25 [1] RSPM (R 4.1.0)            
+##  skimr       * 2.1.3   2021-03-07 [1] RSPM (R 4.1.0)            
+##  snakecase     0.11.0  2019-05-25 [1] RSPM (R 4.1.0)            
+##  sp            1.4-5   2021-01-10 [1] RSPM (R 4.1.0)            
 ##  stringi       1.7.4   2021-08-25 [1] RSPM (R 4.1.0)            
 ##  stringr     * 1.4.0   2019-02-10 [1] RSPM (R 4.1.0)            
 ##  tibble      * 3.1.4   2021-08-25 [1] CRAN (R 4.1.0)            
+##  tidycensus  * 1.0     2021-05-19 [1] RSPM (R 4.1.0)            
 ##  tidyr       * 1.1.3   2021-03-03 [1] RSPM (R 4.1.0)            
 ##  tidyselect    1.1.1   2021-04-30 [1] RSPM (R 4.1.0)            
 ##  tidyverse   * 1.3.1   2021-04-15 [1] RSPM (R 4.1.0)            
+##  tigris        1.4.1   2021-06-18 [1] RSPM (R 4.1.0)            
 ##  tinytex       0.33    2021-08-05 [1] RSPM (R 4.1.0)            
 ##  tzdb          0.1.2   2021-07-20 [1] RSPM (R 4.1.0)            
+##  units         0.7-2   2021-06-08 [1] RSPM (R 4.1.0)            
+##  usethis       2.0.1   2021-02-10 [1] RSPM (R 4.1.0)            
 ##  utf8          1.2.2   2021-07-24 [1] RSPM (R 4.1.0)            
+##  uuid          0.1-4   2020-02-26 [1] RSPM (R 4.1.0)            
 ##  vctrs         0.3.8   2021-04-29 [1] RSPM (R 4.1.0)            
 ##  vroom         1.5.5   2021-09-14 [1] CRAN (R 4.1.0)            
 ##  withr         2.4.2   2021-04-18 [1] RSPM (R 4.1.0)            
+##  wk            0.5.0   2021-07-13 [1] RSPM (R 4.1.0)            
 ##  xfun          0.26    2021-09-14 [1] CRAN (R 4.1.0)            
 ##  xml2          1.3.2   2020-04-23 [1] RSPM (R 4.1.0)            
 ##  xtable        1.8-4   2019-04-21 [1] RSPM (R 4.1.0)            
@@ -627,9 +672,31 @@ View session information
 </details>
 </div>
 </div>
-<div id="references" class="section level2">
+<div id="references" class="section level2 unnumbered">
 <h2>References</h2>
-<p><span class="citation">(<strong>clopper2006?</strong>; <strong>grieve2019?</strong>; <strong>moisl?</strong>; <strong>nguyen2017?</strong>; <strong>yumpu.com?</strong>; <strong>zaghouani2018?</strong>; <strong>szmrecsanyi2011?</strong>)</span></p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-clopper2006" class="csl-entry">
+Clopper, Cynthia G., and David B. Pisoni. 2006. <span>“The Nationwide Speech Project: A New Corpus of American English Dialects.”</span> <em>Speech Communication</em> 48 (6): 633–44. <a href="https://doi.org/10.1016/j.specom.2005.09.010">https://doi.org/10.1016/j.specom.2005.09.010</a>.
+</div>
+<div id="ref-grieve2019" class="csl-entry">
+Grieve, Jack, Chris Montgomery, Andrea Nini, Akira Murakami, and Diansheng Guo. 2019. <span>“Mapping Lexical Dialect Variation in British English Using Twitter.”</span> <em>Frontiers in Artificial Intelligence</em> 2: 11. <a href="https://doi.org/10.3389/frai.2019.00011">https://doi.org/10.3389/frai.2019.00011</a>.
+</div>
+<div id="ref-moisl" class="csl-entry">
+Moisl, Hermann. n.d. <span>“Using Electronic Corpora in Historical Dialectology Research : The Problem of Document Length Variation.”</span> <em>M. Dossena &amp; R. Lass, (Ed.) Studies in English and European Historical Dialectology, Bern:Peter Lang</em>. <a href="https://www.academia.edu/41373320/Using_electronic_corpora_in_historical_dialectology_research_the_problem_of_document_length_variation">https://www.academia.edu/41373320/Using_electronic_corpora_in_historical_dialectology_research_the_problem_of_document_length_variation</a>.
+</div>
+<div id="ref-nguyen2017" class="csl-entry">
+Nguyen, Trong Duc, Anh Tuan Nguyen, Hung Dang Phan, and Tien N. Nguyen. 2017. <span>“2017 IEEE/ACM 39th International Conference on Software Engineering (ICSE).”</span> In, 438–49. <a href="https://doi.org/10.1109/ICSE.2017.47">https://doi.org/10.1109/ICSE.2017.47</a>.
+</div>
+<div id="ref-szmrecsanyi2011" class="csl-entry">
+Szmrecsanyi, Benedikt, and Christoph Wolk. 2011. <span>“Holistic Corpus-Based Dialectology.”</span> <em>Revista Brasileira de Linguística Aplicada</em> 11: 561–92. <a href="https://doi.org/10.1590/S1984-63982011000200011">https://doi.org/10.1590/S1984-63982011000200011</a>.
+</div>
+<div id="ref-yumpu.com" class="csl-entry">
+Yumpu.com. n.d. <span>“Methods and Objectives in Contemporary Dialectology.”</span> <a href="https://www.yumpu.com/en/document/view/5215593/methods-and-objectives-in-contemporary-dialectology">https://www.yumpu.com/en/document/view/5215593/methods-and-objectives-in-contemporary-dialectology</a>.
+</div>
+<div id="ref-zaghouani2018" class="csl-entry">
+Zaghouani, Wajdi, and Anis Charfi. 2018. <span>“Arap-Tweet: A Large Multi-Dialect Twitter Corpus for Gender, Age and Language Variety Identification.”</span> <em>arXiv:1808.07674 [Cs]</em>, August. <a href="http://arxiv.org/abs/1808.07674">http://arxiv.org/abs/1808.07674</a>.
+</div>
+</div>
 </div>
 
 

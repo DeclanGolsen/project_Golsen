@@ -19,39 +19,87 @@ Within the "updated_plurals <- left_join(join_tweets_to_states(plurals),census_r
 
 ```{r setup}
 # Script-specific options or packages
-# None are necessary in this part of the project
+library(tidyverse)
+
+join_tweets_to_states <- function(tweets) {
+  # Function
+  # Takes a data frame result from an rtweet::search_term() query
+  # and maps the tweets with lat/lng values to US states
+  # 
+  # Requires a US Census API Key: https://api.census.gov/data/key_signup.html
+  # that is added to the .Renviron file with tidycensus::census_api_key()
+  
+  library(tidyverse, quietly = TRUE) # data manipulation
+  library(tidycensus)                # us state geometries
+  
+  # Get the spatial geometries for each US state/ territory
+  states_sf <- 
+    get_acs(geography = "state", # states
+            variables = "B01003_001", # total population
+            geometry = TRUE) %>% # spatial geometry
+    select(state_name = NAME, geometry) # only keep state name and geometry columns
+  
+  # Align the CRS for tweets to the census
+  tweets_sf <- 
+    tweets %>% # original data frame
+    filter(lat != "") %>% # only keep tweets with lat/lng values
+    st_as_sf(coords = c("lng", "lat"), # map x/long, y/lat values to coords
+             crs = st_crs(states_sf)) # align coordinate reference system
+  
+  # Map tweet coords to census state geometries
+  tweets_states_sf <- 
+    st_join(tweets_sf, states_sf) 
+  
+  tweets_states_df <- 
+    tweets_states_sf %>% # spatial features object
+    as_tibble() %>% # convert to tibble (remove spatial features)
+    filter(state_name != "") # keep only US states/ territories
+  
+  return(tweets_states_df) # return the final data frame
+  
+}
 ```
 
 ## Run
+
+```{r read-census-regions}
+census_regions <- read_csv(file = "../data/original/twitter/census_regions.csv")
+```
+
 
 ### Second Person Plurals
 
 ```{r update-plurals}
 updated_plurals <- left_join(join_tweets_to_states(plurals),census_regions) # adds census regions to the plurals CSV
+write_csv(updated_plurals, file = "../data/derived/updated_plurals.csv") # write to disk
 ```
 
 ### Outdoor Sales
 
 ```{r update-sales}
 updated_sales <- left_join(join_tweets_to_states(sale),census_regions) # adds census regions to the plurals CSV
+write_csv(updated_sales, file = "../data/derived/updated_sales.csv") # write to disk
 ```
 
 ### Gym Shoes
 
 ```{r update-shoes}
 updated_shoes <- left_join(join_tweets_to_states(shoes),census_regions) # adds census regions to the plurals CSV
+write_csv(updated_shoes, file = "../data/derived/updated_shoes.csv") # write to disk
 ```
 
 ### Soft Drinks
 
 ```{r update-tonix}
 updated_tonix <- left_join(join_tweets_to_states(tonix),census_regions) # adds census regions to the plurals CSV
+write_csv(updated_tonix, file = "../data/derived/updated_tonix.csv") # write to disk
 ```
 
 ### Major Roads
 
 ```{r update-roads}
 updated_roads <- left_join(join_tweets_to_states(roads),census_regions) # adds census regions to the plurals CSV
+write_csv(updated_roads, file = "../data/derived/updated_roads.csv") # write to disk
 ```
 
 ## Finalize

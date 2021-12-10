@@ -13,7 +13,7 @@ biblio-style: apalike
 
 The research area for this project will be dialectology, and the ability of API-based corpora to capture elements of regional dialect variation.
 
-The uncertainty surrounding typed-language's ability to capture distinctive, regional aspects of language use.
+The uncertainty surrounding typed-language's ability to capture distinctive, regional aspects of language use. [@clopper2006; @grieve2019; @moisl; @nguyen2017; @yumpu.com; @zaghouani2018; @szmrecsanyi2011]
 
 ### Research aim and question
 
@@ -44,5 +44,3 @@ rm(list = ls()) # clean working environment
 ```
 
 ## References
-
-[@clopper2006; @grieve2019; @moisl; @nguyen2017; @yumpu.com; @zaghouani2018; @szmrecsanyi2011]

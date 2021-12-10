@@ -17,8 +17,11 @@ After loading in the necessary packages, code should be run for each updated CSV
 
 ## Setup
 
-```{r setup}
+```{r setup, message=FALSE}
 # Script-specific options or packages
+library(tidyverse)     # data manipulation
+library(knitr)         # table output
+
 library(janitor)
 library(patchwork)
 library(broom)
@@ -28,6 +31,23 @@ library(effectsize)
 ## Run
 
 <!-- Steps involved in analyzing the data -->
+
+```{r read-original-datasets, message=FALSE}
+plurals <- read_csv(file = "../data/original/twitter/plurals.csv")
+sales <- read_csv(file = "../data/original/twitter/sales.csv")
+shoes <- read_csv(file = "../data/original/twitter/shoes.csv")
+tonix <- read_csv(file = "../data/original/twitter/tonix.csv")
+roads <- read_csv(file = "../data/original/twitter/roads.csv")
+```
+
+```{r read-derived-datasets, message=FALSE}
+updated_plurals <- read_csv(file = "../data/derived/updated_plurals.csv")
+updated_sales <- read_csv(file = "../data/derived/updated_sales.csv")
+updated_shoes <- read_csv(file = "../data/derived/updated_shoes.csv")
+updated_tonix <- read_csv(file = "../data/derived/updated_tonix.csv")
+updated_roads <- read_csv(file = "../data/derived/updated_roads.csv")
+```
+
 
 ### Second Person Plurals
 

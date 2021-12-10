@@ -9,22 +9,195 @@ biblio-style: apalike
 
 ### Description
 
-<!-- The aim of this script -->
+<!-- The aim of this script --> 
+
 
 ### Usage
 
-<!-- How to run this script: what input it requires and output produced -->
+<!-- How to run this script: what input it requires and output produced --> 
+
+
 
 ## Setup
 
-```{r setup}
+```{r setup, message=FALSE}
 # Script-specific options or packages
+library(tidyverse)  # data manipulation
+library(rtweet)  # collecting tweets from Twitter API
+library(rvest)  # webscraping
+library(purrr)  # iteration
+library(sf)
 
+token = readRDS("../golsen_token.rds") # read personal Twitter API token
 ```
+
+```{r}
+library(tidycensus)
+tidycensus::census_api_key("653148a918713e30f3db5d44b66b692a339a2c88")
+```
+
 
 ## Run
 
-<!-- Steps involved in acquiring and organizing the original data -->
+```{r term-search-function}
+term_search <- 
+  function(search_term, n = 1000) {
+    # Function: 
+    # Search recent tweets for specific term
+    
+    library(rtweet) # to search Twitter API
+    
+    tweets <- 
+      search_tweets(q = sQuote(search_term), # query term (from search_term)
+                    n = n, # number of desired tweets (from n)
+                    include_rts = FALSE, # no retweets
+                    geocode = lookup_coords("usa"), # only from US
+                    token = token) %>%  # token for authentication
+      lat_lng() %>% # extract the geocoordinates where available
+      mutate(search_term = search_term) # add search_term value to the data frame
+    return(tweets) # return the results
+  }
+```
+
+### Second Person Plurals
+
+```{r second-person-plurals}
+second_person_plurals <- c("y'all", "yall", "\"you guys\"")
+```
+
+```{r term-search-second-person-plurals-run}
+fs::dir_create(path = "../data/original/twitter/") # create 'twitter' sub-directory in '../data/original/'
+
+conduct_search <- FALSE # set to TRUE to conduct a new search
+
+if(conduct_search) {
+  
+  cat("Conducting new search. \n")
+  
+  
+  second_person_plurals %>% # terms to search
+    map(term_search, n = 1000) %>% # apply the function to each term, retrieve 500 tweets (if available)
+    do_call_rbind() %>% # join the results by rows
+    save_as_csv(file_name = "../data/original/twitter/plurals.csv") # write results to disk
+  cat("Search results saved to disk. \n")
+  
+} else {
+  cat("Keeping previous search results. \n")
+}
+
+```
+
+### Outdoor Sales
+
+```{r garage-sale}
+sales <- c("\"garage sale\"","\"yard sale\"")
+```
+
+```{r term-search-garage-sale-run}
+fs::dir_create(path = "../data/original/twitter/") # create 'twitter' sub-directory in '../data/original/'
+
+conduct_search <- FALSE # set to TRUE to conduct a new search
+
+if(conduct_search) {
+  
+  cat("Conducting new search. \n")
+  
+  
+  sales %>% # terms to search
+    map(term_search, n = 500) %>% # apply the function to each term, retrieve 500 tweets (if available)
+    do_call_rbind() %>% # join the results by rows
+    save_as_csv(file_name = "../data/original/twitter/sale.csv")
+  cat("Search results saved to disk. \n")
+  
+} else {
+  cat("Keeping previous search results. \n")
+}
+
+```
+
+### Gym Shoes
+
+```{r shoes}
+shoes <- c("sneakers","\"tennis shoes\"")
+```
+
+```{r term-search-shoes-run}
+fs::dir_create(path = "../data/original/twitter/") # create 'twitter' sub-directory in '../data/original/'
+
+conduct_search <- FALSE # set to TRUE to conduct a new search
+
+if(conduct_search) {
+  
+  cat("Conducting new search. \n")
+  
+  
+  shoes %>% # terms to search
+    map(term_search, n = 1000) %>% # apply the function to each term, retrieve 500 tweets (if available)
+    do_call_rbind() %>% # join the results by rows
+    save_as_csv(file_name = "../data/original/twitter/shoes.csv")
+  cat("Search results saved to disk. \n")
+  
+} else {
+  cat("Keeping previous search results. \n")
+}
+
+```
+
+### Soft Drinks
+
+```{r tonix}
+tonic <- c("soda","coke","pop")
+```
+
+```{r term-search-tonix-run}
+fs::dir_create(path = "../data/original/twitter/") # create 'twitter' sub-directory in '../data/original/'
+
+conduct_search <- FALSE # set to TRUE to conduct a new search
+
+if(conduct_search) {
+  
+  cat("Conducting new search. \n")
+  
+  
+  tonic %>% # terms to search
+    map(term_search, n = 2000) %>% # apply the function to each term, retrieve 500 tweets (if available)
+    do_call_rbind() %>% # join the results by rows
+    save_as_csv(file_name = "../data/original/twitter/tonix.csv")
+  cat("Search results saved to disk. \n")
+  
+} else {
+  cat("Keeping previous search results. \n")
+}
+
+```
+
+### Major Roads
+
+```{r roads}
+roads <- c("highway","freeway")
+```
+
+```{r term-search-roads-run}
+fs::dir_create(path = "../data/original/twitter/") # create 'twitter' sub-directory in '../data/original/'
+
+conduct_search <- FALSE # set to TRUE to conduct a new search
+
+if(conduct_search) {
+  
+  cat("Conducting new search. \n")
+  
+  
+  roads %>% # terms to search
+    map(term_search, n = 2000) %>% # apply the function to each term, retrieve 500 tweets (if available)
+    do_call_rbind() %>% # join the results by rows
+    save_as_csv(file_name = "../data/original/twitter/roads.csv")
+  cat("Search results saved to disk. \n")
+  
+} else {
+  cat("Keeping previous search results. \n")
+}
+
+```
 
 ## Finalize
 

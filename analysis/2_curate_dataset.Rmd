@@ -19,12 +19,119 @@ biblio-style: apalike
 
 ```{r setup}
 # Script-specific options or packages
-
+library(skimr)
 ```
 
 ## Run
 
 <!-- Steps involved in curating and organizing the data -->
+
+
+```{r}
+join_tweets_to_states <- function(tweets) {
+  # Function
+  # Takes a data frame result from an rtweet::search_term() query
+  # and maps the tweets with lat/lng values to US states
+  # 
+  # Requires a US Census API Key: https://api.census.gov/data/key_signup.html
+  # that is added to the .Renviron file with tidycensus::census_api_key()
+  
+  library(tidyverse, quietly = TRUE) # data manipulation
+  library(tidycensus)                # us state geometries
+  
+  # Get the spatial geometries for each US state/ territory
+  states_sf <- 
+    get_acs(geography = "state", # states
+            variables = "B01003_001", # total population
+            geometry = TRUE) %>% # spatial geometry
+    select(state_name = NAME, geometry) # only keep state name and geometry columns
+  
+  # Align the CRS for tweets to the census
+  tweets_sf <- 
+    tweets %>% # original data frame
+    filter(lat != "") %>% # only keep tweets with lat/lng values
+    st_as_sf(coords = c("lng", "lat"), # map x/long, y/lat values to coords
+             crs = st_crs(states_sf)) # align coordinate reference system
+  
+  # Map tweet coords to census state geometries
+  tweets_states_sf <- 
+    st_join(tweets_sf, states_sf) 
+  
+  tweets_states_df <- 
+    tweets_states_sf %>% # spatial features object
+    as_tibble() %>% # convert to tibble (remove spatial features)
+    filter(state_name != "") # keep only US states/ territories
+  
+  return(tweets_states_df) # return the final data frame
+  
+}
+
+```
+
+### Second Person Plurals
+
+```{r}
+join_tweets_to_states(plurals)
+```
+
+```{r second-person-plurals-summary, message=FALSE}
+plurals <- read_csv(file = "../data/original/twitter/plurals.csv") # read dataset from disk
+
+plurals %>%
+    count(search_term, sort = TRUE) # preview search term counts
+```
+
+### Outdoor Sales
+
+```{r}
+join_tweets_to_states(sale)
+```
+
+```{r garage-sale-summary, message=FALSE}
+sale <- read_csv(file = "../data/original/twitter/sale.csv") # read dataset from disk
+sale %>%
+    count(search_term, sort = TRUE) # preview
+```
+
+### Gym Shoes
+
+```{r}
+join_tweets_to_states(shoes)
+```
+
+```{r shoes-summary, message=FALSE, warning=FALSE}
+shoes <- read_csv(file = "../data/original/twitter/shoes.csv") # read dataset from disk
+
+shoes %>%
+    count(search_term, sort = TRUE)
+```
+
+### Soft Drinks
+
+```{r}
+join_tweets_to_states(tonix)
+```
+
+```{r tonix-summary, message=FALSE, warning=FALSE}
+tonix <- read_csv(file = "../data/original/twitter/tonix.csv") # read dataset from disk
+
+tonix %>%
+    count(search_term, sort = TRUE) # preview
+```
+
+### Major Roads
+
+```{r}
+join_tweets_to_states(roads)
+```
+
+```{r roads-summary, message=FALSE, warning=FALSE}
+roads <- read_csv(file = "../data/original/twitter/roads.csv") # read dataset from disk
+
+
+roads %>%
+    count(search_term, sort = TRUE) # preview
+```
 
 ## Finalize
 

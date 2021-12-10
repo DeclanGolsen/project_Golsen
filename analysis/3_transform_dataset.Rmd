@@ -24,6 +24,75 @@ biblio-style: apalike
 
 ## Run
 
+### Second Person Plurals
+
+```{r}
+updated_plurals <- left_join(join_tweets_to_states(plurals),census_regions)
+left_join(join_tweets_to_states(plurals),census_regions)
+```
+
+```{r}
+updated_plurals %>% 
+  select(search_term, census_region) %>% # select key variables
+  skim() %>% # get custom data summary
+  yank("factor") # only show factor-oriented information
+```
+
+### Outdoor Sales
+
+```{r}
+updated_sales <- left_join(join_tweets_to_states(sale),census_regions)
+left_join(join_tweets_to_states(sale),census_regions)
+```
+
+```{r}
+updated_sales %>% 
+  select(search_term, census_region) %>% # select key variables
+  skim() %>% # get custom data summary
+  yank("factor") # only show factor-oriented information
+```
+
+### Gym Shoes
+
+```{r}
+updated_shoes <- left_join(join_tweets_to_states(shoes),census_regions)
+left_join(join_tweets_to_states(shoes),census_regions)
+```
+
+```{r}
+updated_shoes %>% 
+  select(search_term, census_region) %>% # select key variables
+  skim() %>% # get custom data summary
+  yank("factor") # only show factor-oriented information
+```
+
+### Soft Drinks
+
+```{r}
+updated_tonix <- left_join(join_tweets_to_states(tonix),census_regions)
+left_join(join_tweets_to_states(tonix),census_regions)
+```
+
+```{r}
+updated_tonix %>% 
+  select(search_term, census_region) %>% # select key variables
+  skim() %>% # get custom data summary
+  yank("factor") # only show factor-oriented information
+```
+
+### Major Roads
+
+```{r}
+updated_roads <- left_join(join_tweets_to_states(roads),census_regions)
+left_join(join_tweets_to_states(roads),census_regions)
+```
+
+```{r}
+updated_roads %>% 
+  select(search_term, census_region) %>% # select key variables
+  skim() %>% # get custom data summary
+  yank("factor") # only show factor-oriented information
+```
 <!-- Steps involved in transforming the data for analysis -->
 
 ## Finalize

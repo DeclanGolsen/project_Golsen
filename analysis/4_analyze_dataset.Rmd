@@ -19,12 +19,415 @@ biblio-style: apalike
 
 ```{r setup}
 # Script-specific options or packages
-
+library(janitor)
+library(patchwork)
+library(broom)
+library(effectsize)
 ```
 
 ## Run
 
 <!-- Steps involved in analyzing the data -->
+
+### Second Person Plurals
+
+```{r}
+updated_plurals %>% 
+  tabyl(search_term, census_region) %>% # cross-tabulate
+  adorn_totals(c("row", "col")) %>% # provide row and column totals
+  adorn_percentages("col") %>% # add percentages to the columns
+  adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round the digits
+  adorn_ns() %>% # add observation number
+  adorn_title("combined") %>% # add a header title
+  kable(booktabs = TRUE, # pretty table
+        caption = "Contingency table for `search_term` and `census_region`.") # caption
+```
+
+```{r}
+p1 <- 
+  updated_plurals %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar() + # geometry
+  labs(y = "Count", x = "Census Region") # labels
+
+p2 <- 
+  updated_plurals %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar(position = "fill") + # geometry, with fill for proportion plot
+  labs(y = "Proportion", x = "Census Region", fill = "Modality") # labels
+
+p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
+
+p1 + p2 + plot_annotation("Distribution of Second Person Plurals Across the United States")
+```
+
+```{r}
+ror_mod_table <- 
+  xtabs(formula = ~ census_region + search_term, # formula 
+        data = updated_plurals) # dataset
+
+c2 <- chisq.test(ror_mod_table) # apply the chi-squared test to `ror_mod_table`
+
+c2 # # preview the test results
+#> 
+#>  Pearson's Chi-squared test with Yates' continuity correction
+#> 
+#> data:  ror_mod_table
+#> X-squared = 101, df = 1, p-value <2e-16
+
+c2$p.value < .05 # confirm p-value below .05
+#> [1] TRUE
+```
+
+```{r}
+c2 %>% # statistical result
+  augment() # view detailed statistical test information
+```
+
+```{r}
+effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
+
+effects  # preview effect size and confidence interval
+#> Cramer's V |       95% CI
+#> -------------------------
+#> 0.18       | [0.14, 0.21]
+
+interpret_r(effects$Cramers_v)  # interpret the effect size
+#> [1] "small"
+#> (Rules: funder2019)
+```
+
+```{r second-person-plurals-plot}
+states_map <- map_data("state")  # from ggplot2
+
+p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
+    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Second Person Plurals")
+
+p + geom_point(data = plurals, aes(x = lng, y = lat, group = 1, color = search_term),
+    alpha = 1/2, size = 1.5)
+```
+
+### Outdoor Sales
+
+```{r}
+updated_sales %>% 
+  tabyl(search_term, census_region) %>% # cross-tabulate
+  adorn_totals(c("row", "col")) %>% # provide row and column totals
+  adorn_percentages("col") %>% # add percentages to the columns
+  adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round the digits
+  adorn_ns() %>% # add observation number
+  adorn_title("combined") %>% # add a header title
+  kable(booktabs = TRUE, # pretty table
+        caption = "Contingency table for `search_term` and `census_region`.") # caption
+```
+
+```{r}
+p1 <- 
+  updated_sales %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar() + # geometry
+  labs(y = "Count", x = "Census Region") # labels
+
+p2 <- 
+  updated_sales %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar(position = "fill") + # geometry, with fill for proportion plot
+  labs(y = "Proportion", x = "Census Region", fill = "Modality") # labels
+
+p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
+
+p1 + p2 + plot_annotation("Relationship between Realization of recipient and Modality.")
+```
+
+```{r}
+ror_mod_table <- 
+  xtabs(formula = ~ census_region + search_term, # formula 
+        data = updated_sales) # dataset
+
+c2 <- chisq.test(ror_mod_table) # apply the chi-squared test to `ror_mod_table`
+
+c2 # # preview the test results
+#> 
+#>  Pearson's Chi-squared test with Yates' continuity correction
+#> 
+#> data:  ror_mod_table
+#> X-squared = 101, df = 1, p-value <2e-16
+
+c2$p.value < .05 # confirm p-value below .05
+#> [1] TRUE
+```
+
+```{r}
+c2 %>% # statistical result
+  augment() # view detailed statistical test information
+```
+
+```{r}
+effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
+
+effects  # preview effect size and confidence interval
+#> Cramer's V |       95% CI
+#> -------------------------
+#> 0.18       | [0.14, 0.21]
+
+interpret_r(effects$Cramers_v)  # interpret the effect size
+#> [1] "small"
+#> (Rules: funder2019)
+```
+
+```{r garage-sale-plot, warning=FALSE}
+states_map <- map_data("state")  # from ggplot2
+
+p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
+    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Outdoor Sales")
+
+p + geom_point(data = sale, aes(x = lng, y = lat, group = 1, color = search_term),
+    alpha = 1/2, size = 1.5)
+```
+
+```{r garage-sale-plot, warning=FALSE}
+states_map <- map_data("state")  # from ggplot2
+
+p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
+    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Outdoor Sales")
+
+p + geom_point(data = sale, aes(x = lng, y = lat, group = 1, color = search_term),
+    alpha = 1/2, size = 1.5)
+```
+
+### Gym Shoes
+
+```{r}
+updated_shoes %>% 
+  tabyl(search_term, census_region) %>% # cross-tabulate
+  adorn_totals(c("row", "col")) %>% # provide row and column totals
+  adorn_percentages("col") %>% # add percentages to the columns
+  adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round the digits
+  adorn_ns() %>% # add observation number
+  adorn_title("combined") %>% # add a header title
+  kable(booktabs = TRUE, # pretty table
+        caption = "Contingency table for `search_term` and `census_region`.") # caption
+```
+
+```{r}
+p1 <- 
+  updated_shoes %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar() + # geometry
+  labs(y = "Count", x = "Census Region") # labels
+
+p2 <- 
+  updated_shoes %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar(position = "fill") + # geometry, with fill for proportion plot
+  labs(y = "Proportion", x = "Census Region", fill = "Modality") # labels
+
+p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
+
+p1 + p2 + plot_annotation("Distribution of Terms for Gym Shoes Across the United States")
+```
+
+```{r}
+ror_mod_table <- 
+  xtabs(formula = ~ census_region + search_term, # formula 
+        data = updated_shoes) # dataset
+
+c2 <- chisq.test(ror_mod_table) # apply the chi-squared test to `ror_mod_table`
+
+c2 # # preview the test results
+#> 
+#>  Pearson's Chi-squared test with Yates' continuity correction
+#> 
+#> data:  ror_mod_table
+#> X-squared = 101, df = 1, p-value <2e-16
+
+c2$p.value < .05 # confirm p-value below .05
+#> [1] TRUE
+```
+
+```{r}
+c2 %>% # statistical result
+  augment() # view detailed statistical test information
+```
+
+```{r}
+effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
+
+effects  # preview effect size and confidence interval
+#> Cramer's V |       95% CI
+#> -------------------------
+#> 0.18       | [0.14, 0.21]
+
+interpret_r(effects$Cramers_v)  # interpret the effect size
+#> [1] "small"
+#> (Rules: funder2019)
+```
+
+```{r shoes-plot, warning=FALSE}
+states_map <- map_data("state")  # from ggplot2
+
+p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
+    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Shoes")
+
+p + geom_point(data = shoes, aes(x = lng, y = lat, group = 1, color = search_term),
+    alpha = 1/2, size = 1.5)
+```
+
+### Soft Drinks
+
+```{r}
+updated_tonix %>% 
+  tabyl(search_term, census_region) %>% # cross-tabulate
+  adorn_totals(c("row", "col")) %>% # provide row and column totals
+  adorn_percentages("col") %>% # add percentages to the columns
+  adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round the digits
+  adorn_ns() %>% # add observation number
+  adorn_title("combined") %>% # add a header title
+  kable(booktabs = TRUE, # pretty table
+        caption = "Contingency table for `search_term` and `census_region`.") # caption
+```
+
+```{r}
+p1 <- 
+  updated_tonix %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar() + # geometry
+  labs(y = "Count", x = "Census Region") # labels
+
+p2 <- 
+  updated_tonix %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar(position = "fill") + # geometry, with fill for proportion plot
+  labs(y = "Proportion", x = "Census Region", fill = "Modality") # labels
+
+p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
+
+p1 + p2 + plot_annotation("Relationship between Realization of recipient and Modality.")
+```
+
+```{r}
+ror_mod_table <- 
+  xtabs(formula = ~ census_region + search_term, # formula 
+        data = updated_tonix) # dataset
+
+c2 <- chisq.test(ror_mod_table) # apply the chi-squared test to `ror_mod_table`
+
+c2 # # preview the test results
+#> 
+#>  Pearson's Chi-squared test with Yates' continuity correction
+#> 
+#> data:  ror_mod_table
+#> X-squared = 101, df = 1, p-value <2e-16
+
+c2$p.value < .05 # confirm p-value below .05
+#> [1] TRUE
+```
+
+```{r}
+c2 %>% # statistical result
+  augment() # view detailed statistical test information
+```
+
+```{r}
+effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
+
+effects  # preview effect size and confidence interval
+#> Cramer's V |       95% CI
+#> -------------------------
+#> 0.18       | [0.14, 0.21]
+
+interpret_r(effects$Cramers_v)  # interpret the effect size
+#> [1] "small"
+#> (Rules: funder2019)
+```
+
+```{r tonix-plot}
+states_map <- map_data("state")  # from ggplot2
+
+p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
+    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Names For Soft Drinks")
+
+p + geom_point(data = tonix, aes(x = lng, y = lat, group = 1, color = search_term),
+    alpha = 1/2, size = 1.5)
+```
+
+### Major Roads
+
+```{r}
+updated_roads %>% 
+  tabyl(search_term, census_region) %>% # cross-tabulate
+  adorn_totals(c("row", "col")) %>% # provide row and column totals
+  adorn_percentages("col") %>% # add percentages to the columns
+  adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round the digits
+  adorn_ns() %>% # add observation number
+  adorn_title("combined") %>% # add a header title
+  kable(booktabs = TRUE, # pretty table
+        caption = "Contingency table for `search_term` and `census_region`.") # caption
+```
+
+```{r}
+p1 <- 
+  updated_roads %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar() + # geometry
+  labs(y = "Count", x = "Census Region") # labels
+
+p2 <- 
+  updated_roads %>% # dataset
+  ggplot(aes(x = census_region, fill = search_term)) + # mappings
+  geom_bar(position = "fill") + # geometry, with fill for proportion plot
+  labs(y = "Proportion", x = "Census Region", fill = "Modality") # labels
+
+p1 <- p1 + theme(legend.position = "none") # remove legend from left plot
+
+p1 + p2 + plot_annotation("Relationship between Realization of recipient and Modality.")
+```
+
+```{r}
+ror_mod_table <- 
+  xtabs(formula = ~ census_region + search_term, # formula 
+        data = updated_roads) # dataset
+
+c2 <- chisq.test(ror_mod_table) # apply the chi-squared test to `ror_mod_table`
+
+c2 # # preview the test results
+#> 
+#>  Pearson's Chi-squared test with Yates' continuity correction
+#> 
+#> data:  ror_mod_table
+#> X-squared = 101, df = 1, p-value <2e-16
+
+c2$p.value < .05 # confirm p-value below .05
+#> [1] TRUE
+```
+
+```{r}
+c2 %>% # statistical result
+  augment() # view detailed statistical test information
+```
+
+```{r}
+effects <- effectsize(c2)  # evaluate effect size and generate a confidence interval
+
+effects  # preview effect size and confidence interval
+#> Cramer's V |       95% CI
+#> -------------------------
+#> 0.18       | [0.14, 0.21]
+
+interpret_r(effects$Cramers_v)  # interpret the effect size
+#> [1] "small"
+#> (Rules: funder2019)
+```
+
+```{r roads-plot, warning=FALSE}
+states_map <- map_data("state")  # from ggplot2
+
+p <- ggplot() + geom_polygon(data = states_map, aes(x = long, y = lat, group = group),
+    fill = "grey", color = "black") + labs(title = "Tweets in the USA", subtitle = "Word for Major Roads")
+
+p + geom_point(data = roads, aes(x = lng, y = lat, group = 1, color = search_term),
+    alpha = 1/2, size = 1.5)
+```
 
 ## Finalize
 

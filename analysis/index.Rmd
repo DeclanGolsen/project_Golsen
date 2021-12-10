@@ -23,10 +23,15 @@ Are established aspects of regional dialects found in API-based data, such as tw
 
 ## Reproduce
 
-
 ### Session
 
-<details><summary>View session information</summary>
+<details>
+
+<summary>
+
+View session information
+
+</summary>
 
 ```{r}
 sessioninfo::session_info()
